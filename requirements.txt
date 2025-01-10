@@ -1,0 +1,4 @@
+Flask
+waitress
+serverless-wsgi
+fuzzywuzzy==0.18.0

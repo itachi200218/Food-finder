@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Finder</title>
+    
+    <!-- Favicon Setup -->
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    
+    <!-- Link to Font Awesome (for icons) -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #121212; /* Dark background */
+            color: #f1f1f1; /* Light text color for contrast */
+            display: flex;
+            flex-direction: row;
+            height: 100vh;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #fff;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.7);
+            margin-bottom: 20px;
+            text-align: center;
+            width: 100%;
+        }
+
+        /* Left section for the search bar and recipe details */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            width: 70%;
+        }
+
+        #recipe-form {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            max-width: 600px;
+            padding: 10px 20px;
+            background-color: #1e1e1e;
+            border-radius: 30px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            margin-bottom: 30px;
+        }
+
+        #recipe-input {
+            padding: 12px 20px;
+            width: 70%;
+            border: none;
+            border-radius: 30px;
+            outline: none;
+            font-size: 1.2rem;
+            background-color: #333;
+            color: #fff;
+            transition: all 0.3s ease;
+        }
+
+        #recipe-input:focus {
+            background-color: #444;
+            box-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+        }
+
+        button {
+            padding: 12px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            margin-left: 15px;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
+        }
+
+        #recipe-details {
+            width: 100%;
+            max-width: 600px;
+            background-color: #1c1c1c;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+            transition: all 0.3s ease;
+            margin-top: 40px;
+        }
+
+        #recipe-details h2 {
+            color: #fff;
+            font-size: 2rem;
+            margin-bottom: 20px;
+            text-transform: capitalize;
+        }
+
+        #recipe-details p.description {
+            font-size: 1.1rem;
+            color: #ccc;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+
+        #recipe-details ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        #recipe-details ul li {
+            font-size: 1rem;
+            color: #ddd;
+            padding: 5px;
+            border-bottom: 1px solid #444;
+        }
+
+        #recipe-details ul li:last-child {
+            border-bottom: none;
+        }
+
+        /* Right sidebar for recipe categories */
+        .sidebar {
+            width: 250px;
+            margin-left: 20px;
+            background: linear-gradient(135deg, #1e1e1e, #333); /* Gradient background */
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.8); /* Deeper shadow for a 3D effect */
+            flex: 0 0 250px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar h3 {
+            color: #fff;
+            font-size: 2rem;
+            margin-bottom: 20px;
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        .sidebar ul {
+            list-style-type: none;
+            padding-left: 0;
+            margin-top: 10px;
+        }
+
+        .sidebar ul li {
+            font-size: 1.1rem;
+            color: #ddd;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 8px; /* Space between items */
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar ul li:hover {
+            background-color: #444;
+            color: #fff;
+            transform: translateX(5px); /* Slide effect */
+        }
+
+        .sidebar ul li i {
+            margin-right: 10px; /* Space for icons */
+            color: #f1f1f1;
+            font-size: 1.3rem;
+        }
+
+        .sidebar h4 {
+            color: #bbb;
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .sidebar ul li.active {
+            background-color: #4CAF50; /* Highlight active item */
+            color: #fff;
+        }
+
+        /* Optional: Styling for the recipe categories */
+        .sidebar div {
+            margin-bottom: 30px;
+        }
+
+        /* Media Queries for responsiveness */
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+
+            .main-content {
+                width: 100%;
+            }
+
+            .sidebar {
+                width: 100%;
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-content">
+        <h1>Food Finder</h1>
+        <form id="recipe-form">
+            <input type="text" id="recipe-input" placeholder="Enter a recipe name or keyword" required>
+            <button type="submit">Search</button>
+        </form>
+
+        <div id="recipe-details"></div>
+    </div>
+
+    <div class="sidebar">
+        <h3>Recipe Categories</h3>
+        <div>
+            <h4>Veg</h4>
+            <ul>
+                <li><i class="fas fa-lemon"></i> Vegetable Biryani</li>
+                <li><i class="fas fa-carrot"></i> Paneer Butter Masala</li>
+                <li><i class="fas fa-leaf"></i> Chole Bhature</li>
+                <li><i class="fas fa-pizza-slice"></i> Palak Paneer</li>
+                <li><i class="fas fa-bread-slice"></i> Stuffed Paratha</li>
+            </ul>
+        </div>
+
+        <div>
+            <h4>Non-Veg</h4>
+            <ul>
+                <li><i class="fas fa-drumstick-bite"></i> Chicken Biryani</li>
+                <li><i class="fas fa-drumstick-bite"></i> Butter Chicken</li>
+                <li><i class="fas fa-bone"></i> Mutton Curry</li>
+                <li><i class="fas fa-fish"></i> Fish Fry</li>
+                <li><i class="fas fa-drumstick-bite"></i> Chicken Korma</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Link to external script file -->
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
