@@ -1,1 +1,17 @@
 .vercel
+# Ignore Python virtual environment
+venv/
+
+# Ignore pyc and pyo files
+*.pyc
+*.pyo
+
+# Ignore .env file if you use it for environment variables
+.env
+
+# Ignore IDE-specific files (if you use them)
+.vscode/
+.idea/
+
+# Ignore other unnecessary files
+*.log
