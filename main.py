@@ -1,7 +1,8 @@
 import os
 import logging
 from flask import Flask, render_template, request, jsonify
-from fuzzywuzzy import process
+from fuzzywuzzy import process  # FuzzyWuzzy import
+from rapidfuzz import process as rapid_process  # RapidFuzz import
 
 # Setup Flask app with the correct template and static folder
 app = Flask(__name__, template_folder='templetss', static_folder='frontend')
@@ -128,63 +129,51 @@ mock_recipes = {
 
     #tiffins
     
-    
     "masala dosa": {
         "ingredients": ["Rice", "Urad Dal", "Potatoes", "Onions", "Mustard Seeds", "Curry Leaves", "Turmeric", "Salt"],
         "description": "A crispy and savory pancake made from fermented rice and lentil batter, filled with spiced potato filling.",
-        "steps": [
-            "Soak rice and urad dal for 4-6 hours, then grind into a smooth batter and ferment overnight.",
-            "Boil potatoes, mash them, and sauté with mustard seeds, curry leaves, onions, and turmeric to make the filling.",
-            "Heat a non-stick pan, pour a ladleful of batter, and spread into a thin circle.",
-            "Cook until golden, place the filling in the center, fold, and serve hot with coconut chutney and sambar."
-        ],
         "url": "https://youtube.com/shorts/gizichkVuYU?si=fqvDBo_n0nzssKqu"
     },
     "aloo paratha": {
         "ingredients": ["Wheat Flour", "Potatoes", "Cumin Seeds", "Coriander Powder", "Red Chili Powder", "Butter"],
         "description": "A stuffed flatbread with spiced mashed potatoes, served with yogurt or pickle.",
-        "steps": [
-            "Prepare dough using wheat flour, water, and a pinch of salt. Let it rest for 20 minutes.",
-            "Boil and mash potatoes, then mix in cumin seeds, coriander powder, red chili powder, and salt.",
-            "Roll out a small dough ball, place the potato filling in the center, and seal the edges.",
-            "Roll it out gently and cook on a hot griddle with butter until golden on both sides."
-        ],
         "url": "https://youtube.com/shorts/gizichkVuYU?si=fqvDBo_n0nzssKqu"
     },
     "samosa": {
         "ingredients": ["Potatoes", "Green Peas", "Cumin Seeds", "Coriander", "Garam Masala", "Flour"],
         "description": "A popular deep-fried snack filled with spiced potatoes and peas.",
-        "steps": [
-            "Make dough using flour, salt, and oil, then let it rest for 30 minutes.",
-            "Prepare the filling by boiling potatoes, mashing them, and mixing with green peas, cumin seeds, coriander, and garam masala.",
-            "Roll out the dough, cut into semi-circles, fold into a cone, and fill with the potato mixture.",
-            "Seal the edges, deep-fry in hot oil until golden, and serve hot."
-        ],
         "url": "https://youtube.com/shorts/gizichkVuYU?si=fqvDBo_n0nzssKqu"
     },
     "pav bhaji": {
         "ingredients": ["Potatoes", "Mixed Vegetables", "Butter", "Pav Bhaji Masala", "Pav (bread rolls)"],
         "description": "A spicy mashed vegetable curry served with buttered bread rolls.",
-        "steps": [
-            "Boil and mash potatoes and other mixed vegetables like peas, carrots, and cauliflower.",
-            "Sauté onions, add tomatoes, and cook until soft. Mix in pav bhaji masala and the mashed vegetables.",
-            "Simmer the mixture with butter, adjusting seasoning as needed.",
-            "Serve hot with buttered pav rolls, garnished with cilantro and a slice of lemon."
-        ],
         "url": "https://youtube.com/shorts/gizichkVuYU?si=fqvDBo_n0nzssKqu"
     },
     "quiche lorraine": {
         "ingredients": ["Eggs", "Cream", "Bacon", "Cheese", "Spinach", "Onion", "Pie Crust"],
         "description": "A savory tart filled with eggs, cream, cheese, and bacon, baked to perfection.",
-        "steps": [
-            "Prepare a pie crust or use a store-bought one, and blind bake it for 10 minutes.",
-            "Cook bacon until crispy, then sauté onions and spinach in the same pan.",
-            "Whisk together eggs, cream, and cheese, and add the cooked bacon and vegetables.",
-            "Pour the mixture into the crust, bake at 180°C (350°F) for 30-40 minutes, and serve warm."
-        ],
         "url": "https://youtube.com/shorts/gizichkVuYU?si=fqvDBo_n0nzssKqu"
     },
-
+    "falafel": {
+        "ingredients": ["Chickpeas", "Garlic", "Parsley", "Cumin", "Coriander", "Onion", "Flour"],
+        "description": "Deep-fried balls made from ground chickpeas, herbs, and spices, usually served in pita with tahini sauce.",
+        "url": "https://youtube.com/shorts/gizichkVuYU?si=fqvDBo_n0nzssKqu"
+    },
+    "banh mi": {
+        "ingredients": ["Baguette", "Pork", "Pickled Vegetables", "Cilantro", "Cucumber", "Jalapenos", "Mayo"],
+        "description": "A Vietnamese sandwich made with a crispy baguette and a variety of savory fillings, including pork, pickled vegetables, and fresh herbs.",
+        "url": "https://youtube.com/shorts/gizichkVuYU?si=fqvDBo_n0nzssKqu"
+    },
+    "paella": {
+        "ingredients": ["Rice", "Saffron", "Shrimp", "Mussels", "Chicken", "Peas", "Bell Peppers"],
+        "description": "A traditional Spanish rice dish cooked with saffron, seafood, and vegetables.",
+        "url": "https://youtube.com/shorts/gizichkVuYU?si=fqvDBo_n0nzssKqu"
+    },
+    "dim sum": {
+        "ingredients": ["Pork", "Shrimp", "Dumpling Wrappers", "Mushrooms", "Soy Sauce", "Ginger"],
+        "description": "Small bite-sized portions of food, typically served in small bamboo baskets, including dumplings and buns.",
+        "url": "https://youtube.com/shorts/gizichkVuYU?si=fqvDBo_n0nzssKqu"
+    },
     #sea foods
     
     "shrimp scampi": {

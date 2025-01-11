@@ -33,11 +33,15 @@ function fetchRecipeDetails(recipeName) {
             // Extract the YouTube video ID if the URL is valid
             const videoEmbed = data.url ? ` 
                 <h3>Watch the recipe video:</h3>
-                <iframe width="560" height="315" 
-                    src="https://www.youtube.com/embed/${extractYouTubeId(data.url)}" 
-                    frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
-                </iframe>
+                <div class="video-container">
+                    <iframe width="560" height="315" 
+                        src="https://www.youtube.com/embed/${extractYouTubeId(data.url)}" 
+                        frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
+                    </iframe>
+                </div>
             ` : '';
+        
+        
 
             // Display both the description, ingredients, and video
             recipeDetails.innerHTML = `
@@ -63,6 +67,7 @@ function extractYouTubeId(url) {
     const match = url.match(regex);
     return match ? match[1] : null;
 }
+
 
 
 
