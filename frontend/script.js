@@ -44,13 +44,18 @@ function fetchRecipeDetails(recipeName) {
         
 
             // Display both the description, ingredients, and video
-            recipeDetails.innerHTML = `
+            recipeDetailsDiv.innerHTML = `
                 <h2>Description:</h2>
                 <p>${data.description}</p>
                 <h2>Ingredients:</h2>
                 <ul>
                     ${data.ingredients.map(ingredient => `<li>${ingredient}</li>`).join('')}
                 </ul>
+                <h2>Steps:</h2>
+                <ol>
+                    ${data.steps.map(step => `<li>${step}</li>`).join('')}
+                </ol>
+
                 ${videoEmbed}
             `;
         }
