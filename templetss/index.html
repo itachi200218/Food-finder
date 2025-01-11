@@ -17,43 +17,58 @@
 <body>
     <div class="main-content">
         <h1>Food Finder</h1>
-        <form id="recipe-form">
+        <form id="recipe-form" onsubmit="searchRecipe(event)">
             <input type="text" id="recipe-input" placeholder="Enter a recipe name or keyword" required>
             <button type="submit">Search</button>
         </form>
 
         <div id="recipe-details"></div>
     </div>
-
+    <div class="container">
     <div class="sidebar">
         <h3>Recipe Categories</h3>
+        
         <div>
             <h4>Veg</h4>
             <ul>
-                <li><i class="fas fa-lemon"></i> Vegetable Biryani</li>
-                <li><i class="fas fa-carrot"></i> Paneer Butter Masala</li>
-                <li><i class="fas fa-leaf"></i> Chole Bhature</li>
-                <li><i class="fas fa-pizza-slice"></i> Palak Paneer</li>
-                <li><i class="fas fa-bread-slice"></i> Stuffed Paratha</li>
+                <li onclick="getRecipeDetails('Vegetable Biryani')"><i class="fas fa-lemon"></i> Vegetable Biryani</li>
+                <li onclick="getRecipeDetails('Paneer Butter Masala')"><i class="fas fa-carrot"></i> Paneer Butter Masala</li>
+                <li onclick="getRecipeDetails('Chole Bhature')"><i class="fas fa-leaf"></i> Chole Bhature</li>
+                <li onclick="getRecipeDetails('Palak Paneer')"><i class="fas fa-pizza-slice"></i> Palak Paneer</li>
+                <li onclick="getRecipeDetails('Stuffed Paratha')"><i class="fas fa-bread-slice"></i> Stuffed Paratha</li>
             </ul>
         </div>
 
         <div>
             <h4>Non-Veg</h4>
-            <ul>
-                <li><i class="fas fa-drumstick-bite"></i> Chicken Biryani</li>
-                <li><i class="fas fa-drumstick-bite"></i> Butter Chicken</li>
-                <li><i class="fas fa-bone"></i> Mutton Curry</li>
-                <li><i class="fas fa-fish"></i> Fish Fry</li>
-                <li><i class="fas fa-drumstick-bite"></i> Chicken Korma</li>
+            <ul id="non-veg-recipes">
+                <li onclick="getRecipeDetails('Chicken Biryani')"><i class="fas fa-drumstick-bite"></i> Chicken Biryani</li>
+                <li onclick="getRecipeDetails('Butter Chicken')"><i class="fas fa-drumstick-bite"></i> Butter Chicken</li>
+                <li onclick="getRecipeDetails('Mutton Curry')"><i class="fas fa-bone"></i> Mutton Curry</li>
+                <li onclick="getRecipeDetails('Fish Fry')"><i class="fas fa-fish"></i> Fish Fry</li>
+                <li onclick="getRecipeDetails('Chicken Korma')"><i class="fas fa-drumstick-bite"></i> Chicken Korma</li>
             </ul>
         </div>
+
+        <!-- Explore More Button -->
+        <button class="sidebar-button">Explore More</button>
     </div>
 
-    <!-- Link to external script file -->
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
+ <!-- Link to the external API script file -->
+<script src="{{ url_for('static', filename='js/api.js') }}"></script>
+
+<!-- Link to the external frontend functionality script file -->
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+
+    
+
 </body>
 </html>
+
+
+
+
+
 
 
 
