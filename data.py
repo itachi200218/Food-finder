@@ -1,4 +1,13 @@
+import mysql.connector
 
+# Your connection function
+def connect_to_db():
+    return mysql.connector.connect(
+        host="localhost",         # Change this to your database host
+        user="root",              # Replace with your MySQL username
+        password="Chetan@0903",   # Replace with your MySQL password
+        database="recipedata"     # Replace with your database name
+    )
 
 # Mock Data for Recipes (Updated with new YouTube Shorts URL)
 mock_recipes = {
@@ -572,3 +581,41 @@ mock_recipes = {
     "url": "https://youtube.com/shorts/gizichkVuYU?si=fqvDBo_n0nzssKqu"
 }
 }
+def insert_mock_data():
+    db = connect_to_db()
+    cursor = db.cursor()
+
+    # Insert each recipe into the `recipe` table
+    for name, details in mock_recipes.items():
+        ingredients = ", ".join(details["ingredients"])
+        description = details["description"]
+        steps = "; ".join(details["steps"])
+        url = details.get("url", None)
+
+        # Use INSERT INTO recipe to insert data into the correct table
+        query = """
+        INSERT INTO recipes (name, ingredients, description, steps, url)
+        VALUES (%s, %s, %s, %s, %s)
+        """
+        values = (name, ingredients, description, steps, url)
+
+        try:
+            cursor.execute(query, values)
+            print(f"Inserted recipe: {name}")
+        except mysql.connector.Error as err:
+            print(f"Error inserting {name}: {err}")
+
+    # Commit changes to the database
+    try:
+        db.commit()
+        print("Mock data inserted successfully!")
+    except mysql.connector.Error as err:
+        print(f"Error committing changes: {err}")
+
+    # Close the database connection
+    cursor.close()
+    db.close()
+    print("Database connection closed.")
+
+# Call the function
+insert_mock_data()
