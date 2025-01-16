@@ -38,4 +38,3 @@ def setup_routes(app):
             current_index = 0
         
         return jsonify(recipes_list)
-

@@ -2,7 +2,7 @@
 from extensions import db  # Import db from extensions.py
 
 class Recipe(db.Model):
-    __tablename__ = 'recipes'
+    __tablename__ = 'recipe'
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), nullable=False, unique=True)
