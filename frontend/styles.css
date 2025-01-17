@@ -5,13 +5,13 @@
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #121212; /* Dark background */
-    color: #f1f1f1; /* Light text color for contrast */
     display: flex;
     flex-direction: row;
-    height: 100vh;
-    padding: 20px;
+    font-family: Arial, sans-serif;
+    background-color: #121212;
+    margin: 0;
+    padding: 0;
+    color: #ddd;
 }
 
 h1 {
@@ -24,7 +24,16 @@ h1 {
 }
 
 /* Left section for the search bar and recipe details */
-.main-content {
+/* Left section for the search bar and recipe details */
+.menu-container {
+    display: flex;
+    flex: 1;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 20px;
+}
+
+.menu {
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -33,6 +42,7 @@ h1 {
     width: 70%;
 }
 
+/* Recipe form centered */
 #recipe-form {
     display: flex;
     justify-content: center;
@@ -80,6 +90,7 @@ button:hover {
     transform: translateY(-2px);
 }
 
+/* Recipe Details */
 #recipe-details {
     width: 100%;
     max-width: 600px;
@@ -87,7 +98,6 @@ button:hover {
     padding: 30px;
     border-radius: 15px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
-    transition: all 0.3s ease;
     margin-top: 40px;
 }
 
@@ -121,15 +131,14 @@ button:hover {
     border-bottom: none;
 }
 
-/* Right sidebar for recipe categories */
+/* Sidebar Styling */
 .sidebar {
     width: 250px;
-    margin-right: 20px; /* Move the sidebar to the right */
-    background: linear-gradient(135deg, #1e1e1e, #333); /* Gradient background */
+    margin-left: 20px; /* Adds space between sidebar and content */
+    background: linear-gradient(135deg, #1e1e1e, #333);
     padding: 25px;
     border-radius: 15px;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.8); /* Deeper shadow for a 3D effect */
-    transition: all 0.3s ease;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.8);
     flex: 0 0 250px;
 }
 
@@ -155,7 +164,7 @@ button:hover {
     padding: 12px;
     cursor: pointer;
     transition: all 0.3s ease;
-    margin-bottom: 8px; /* Space between items */
+    margin-bottom: 8px;
     border-radius: 8px;
     display: flex;
     align-items: center;
@@ -164,70 +173,56 @@ button:hover {
 .sidebar ul li:hover {
     background-color: #444;
     color: #fff;
-    transform: translateX(5px); /* Slide effect */
+    transform: translateX(5px);
 }
 
 .sidebar ul li i {
-    margin-right: 10px; /* Space for icons */
+    margin-right: 10px;
     color: #f1f1f1;
     font-size: 1.3rem;
 }
 
 /* Sidebar Active Item */
 .sidebar ul li.active {
-    background-color: #4CAF50; /* Highlight active item */
+    background-color: #4CAF50;
     color: #fff;
 }
 
-/* Mobile View: Adjust Sidebar */
-@media (max-width: 768px) {
-    .sidebar {
-        width: 200px; /* Make sidebar smaller on mobile */
-        margin-right: 10px; /* Reduce margin */
-        padding: 15px;
-    }
-
-    /* Show Sidebar on Button Click (Add this in JS if needed) */
-    .sidebar.show {
-        display: block; /* Display sidebar on mobile when activated */
-    }
-
-    .sidebar-toggle {
-        display: none;
-        font-size: 1.5rem;
-        background-color: transparent;
-        border: none;
-        color: #fff;
-        position: absolute;
-        top: 10px;
-        right: 20px;
-    }
-
-    /* Show the button on mobile */
-    @media (max-width: 768px) {
-        .sidebar-toggle {
-            display: block;
-        }
-    }
+/* Global link styling */
+a {
+    text-decoration: none;
+    color: inherit;
 }
 
-/* Media Queries for responsiveness */
+/* Mobile View Styles */
 @media (max-width: 768px) {
     body {
+        display: flex;
         flex-direction: column;
     }
 
-    .main-content {
+    /* Main Content */
+    .menu-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .menu {
         width: 100%;
+        margin-bottom: 20px;
     }
 
     .sidebar {
         width: 100%;
         margin-left: 0;
+        margin-bottom: 20px;
+        box-shadow: none; /* Remove box-shadow for mobile */
     }
 
+    /* Recipe Form */
     #recipe-form {
         flex-direction: column;
+        width: 100%;
     }
 
     #recipe-input {
@@ -240,13 +235,18 @@ button:hover {
         margin-left: 0;
     }
 
-    /* Make video responsive */
+    /* Recipe Details */
+    #recipe-details {
+        width: 100%;
+        margin-top: 20px;
+    }
+
+    /* Adjust layout for video container and additional recipe content */
     .video-container {
         position: relative;
-        padding-bottom: 56.25%; /* 16:9 aspect ratio */
+        padding-bottom: 56.25%;
         height: 0;
         overflow: hidden;
-        max-width: 100%;
         width: 100%;
     }
 
@@ -258,80 +258,56 @@ button:hover {
         height: 100%;
     }
 
-    /* Recipe Container - Black Background */
     .recipe-container {
-        background-color: black; /* Black background */
-        color: white; /* White text for better visibility */
+        background-color: black;
+        color: white;
         padding: 20px;
         border-radius: 8px;
         margin: 10px 0;
     }
 
-    /* Menu remains grey as per your request */
-    .menu {
-        background-color: grey;
-        color: white;
-        padding: 10px;
-        font-size: 16px;
-        border-radius: 8px;
-        margin-bottom: 20px;
-        max-height: none; /* Ensure no height limitation */
-        overflow-y: auto; /* Allow scroll if content overflows */
-
-    }
-
-    /* Style the links or buttons within the menu */
-    .menu a {
-        color: white;
-        text-decoration: none;
-        margin: 0 15px;
-    }
-
-    .menu a:hover {
-        text-decoration: underline;
-    }
-
-    /* Optional: Style the explore more button */
+    /* Styling for explore more button */
     .explore-more {
-        background-color: #333 !important;  /* Slightly darker grey */
+        background-color: #333 !important;
         color: white !important;
         padding: 10px 20px;
         border: none;
         border-radius: 5px;
         cursor: pointer;
+        transition: all 0.3s ease;
     }
 
     .explore-more:hover {
         background-color: #444;
     }
 
+    /* Adjust extra recipes section */
     .extra-recipes {
         background-color: black;
         color: white;
         padding: 10px;
         margin-top: 10px;
         border-radius: 8px;
-        max-height: none; /* Allow expansion on desktop */
     }
 
     .extra-recipes:hover {
         background-color: #333 !important;
     }
-    /* Hide elements with the 'hidden' class */
 
-.hidden {
-    display: none;
-}
+    
 
-/* Make sure the Explore More section is displayed below the button */
-#explore-recipes {
-    margin-top: 20px;  /* Add space between the button and the recipes */
-    padding-top: 10px;
-    display: none;     /* Default state is hidden */
-}
+    /* Toggle extra recipes visibility */
+    #explore-recipes {
+        margin-top: 20px;
+        padding-top: 10px;
+        display: none;
+    }
 
-/* When visible, display the section */
-#explore-recipes.visible {
-    display: block;
-}
+    #explore-recipes.visible {
+        display: block;
+    }
+    /* Hide extra recipes by default */
+    .hidden {
+        display: none;
+    }
 }

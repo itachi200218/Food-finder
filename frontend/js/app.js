@@ -121,15 +121,28 @@ document.addEventListener("DOMContentLoaded", function () {
         // Add each new recipe to the list (without clearing the existing ones)
         recipes.forEach(recipe => {
             const listItem = document.createElement("li");
-            listItem.innerHTML = `
+    
+            // Add the 'recipe-container' class for black background
+            listItem.classList.add("recipe-container");
+    
+            // Create the anchor tag with recipe name
+            const anchorTag = document.createElement("a");
+            anchorTag.href = "#";
+            anchorTag.innerHTML = `
                 <i class="${recipe.icon}"></i> ${recipe.name}
             `;
-            listItem.addEventListener("click", function () {
+    
+            // Add click event to the anchor tag
+            anchorTag.addEventListener("click", function () {
                 getRecipeDetails(recipe.name);  // Fetch the full details when clicked
             });
+    
+            // Append the anchor tag to the list item
+            listItem.appendChild(anchorTag);
             exploreRecipesList.appendChild(listItem);
         });
     }
+    
 
     // Fetch and display details for the clicked recipe
     async function getRecipeDetails(recipeName) {

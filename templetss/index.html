@@ -16,68 +16,66 @@
 </head>
 <body>
 
-    <div class="main-content">
-        <h1>Food Finder</h1>
-        <!-- Search Form Section -->
-        <section class="search-section">
-            <form id="recipe-form" onsubmit="searchRecipe(event)" class="search-form">
-                <label for="recipe-input" class="visually-hidden">Search for a recipe or keyword</label>
-                <input type="text" id="recipe-input" placeholder="Enter a recipe name or keyword" required aria-label="Search for a recipe or keyword">
-                <button type="submit" aria-label="Search for recipes">Search</button>
-            </form>
-
-            <!-- Display Recipe Details Here -->
-            <div id="recipe-details" class="recipe-details"></div>
-        </section>
-    </div>
-
-    <!-- Sidebar with Recipe Categories -->
-    <div class="sidebar">
-        <h3>Recipe Categories</h3>
+    <!-- Menu and Recipe Section Container -->
+    <div class="menu-container">
+        <div class="menu">
+            <h1>Food Finder</h1>
+            <!-- Search Form Section -->
+            <section class="search-section">
+                <form id="recipe-form" onsubmit="searchRecipe(event)" class="search-form">
+                    <label for="recipe-input" class="visually-hidden">Search for a recipe or keyword</label>
+                    <input type="text" id="recipe-input" placeholder="Enter a recipe name or keyword" required aria-label="Search for a recipe or keyword">
+                    <button type="submit" aria-label="Search for recipes">Search</button>
+                </form>
     
-        <!-- Veg Recipes -->
-        <h4>Veg</h4>
-        <ul>
-            <li onclick="getRecipeDetails('Vegetable Biryani')"><i class="fas fa-lemon"></i> Vegetable Biryani</li>
-            <li onclick="getRecipeDetails('Paneer Butter Masala')"><i class="fas fa-carrot"></i> Paneer Butter Masala</li>
-            <li onclick="getRecipeDetails('Chole Bhature')"><i class="fas fa-leaf"></i> Chole Bhature</li>
-            <li onclick="getRecipeDetails('Palak Paneer')"><i class="fas fa-pizza-slice"></i> Palak Paneer</li>
-            <li onclick="getRecipeDetails('Stuffed Paratha')"><i class="fas fa-bread-slice"></i> Stuffed Paratha</li>
-        </ul>
-
-        <!-- Non-Veg Recipes -->
-        <h4>Non-Veg</h4>
-        <ul id="non-veg-recipes">
-            <li onclick="getRecipeDetails('Chicken Biryani')"><i class="fas fa-drumstick-bite"></i> Chicken Biryani</li>
-            <li onclick="getRecipeDetails('Butter Chicken')"><i class="fas fa-drumstick-bite"></i> Butter Chicken</li>
-            <li onclick="getRecipeDetails('Mutton Curry')"><i class="fas fa-bone"></i> Mutton Curry</li>
-            <li onclick="getRecipeDetails('Fish Fry')"><i class="fas fa-fish"></i> Fish Fry</li>
-            <li onclick="getRecipeDetails('Chicken Korma')"><i class="fas fa-drumstick-bite"></i> Chicken Korma</li>
-        </ul>
-
-        <!-- Explore More Button -->
-<button class="sidebar-button" onclick="toggleExploreMore()">Explore More</button>
-
-<!-- New Button to Hide Explore Section -->
-
-
-<!-- Recipes Section (Initially hidden) -->
-<div id="explore-recipes" class="hidden">
-    <h4>Additional Recipes</h4>
-    <ul id="explore-recipes-list">
-        <!-- Recipes will be dynamically added here -->
-    </ul>
-    <button id="hide-recipes-button" class="hidden" onclick="hideRecipeSection()">Hide Recipes</button>
-</div>
-
+                <!-- Display Recipe Details Here -->
+                <div id="recipe-details" class="recipe-details"></div>
+            </section>
+        </div>
+    
+        <!-- Sidebar with Recipe Categories -->
+        <div class="sidebar">
+            <h3>Recipe Categories</h3>
+            <!-- Veg Recipes -->
+            <h4>Veg</h4>
+            <ul>
+                <li><a href="#" onclick="getRecipeDetails('Vegetable Biryani')"><i class="fas fa-lemon"></i> Vegetable Biryani</a></li>
+                <li><a href="#" onclick="getRecipeDetails('Paneer Butter Masala')"><i class="fas fa-carrot"></i> Paneer Butter Masala</a></li>
+                <li><a href="#" onclick="getRecipeDetails('Chole Bhature')"><i class="fas fa-leaf"></i> Chole Bhature</a></li>
+                <li><a href="#" onclick="getRecipeDetails('Palak Paneer')"><i class="fas fa-pizza-slice"></i> Palak Paneer</a></li>
+                <li><a href="#" onclick="getRecipeDetails('Stuffed Paratha')"><i class="fas fa-bread-slice"></i> Stuffed Paratha</a></li>
+            </ul>
+    
+            <!-- Non-Veg Recipes -->
+            <h4>Non-Veg</h4>
+            <ul id="non-veg-recipes">
+                <li><a href="#" onclick="getRecipeDetails('Chicken Biryani')"><i class="fas fa-drumstick-bite"></i> Chicken Biryani</a></li>
+                <li><a href="#" onclick="getRecipeDetails('Butter Chicken')"><i class="fas fa-drumstick-bite"></i> Butter Chicken</a></li>
+                <li><a href="#" onclick="getRecipeDetails('Mutton Curry')"><i class="fas fa-bone"></i> Mutton Curry</a></li>
+                <li><a href="#" onclick="getRecipeDetails('Fish Fry')"><i class="fas fa-fish"></i> Fish Fry</a></li>
+                <li><a href="#" onclick="getRecipeDetails('Chicken Korma')"><i class="fas fa-drumstick-bite"></i> Chicken Korma</a></li>
+            </ul>
+    
+            <!-- Explore More Button -->
+            <button class="sidebar-button" onclick="toggleExploreMore()">Explore More</button>
+    
+            <!-- Recipes Section (Initially hidden) -->
+            <div id="explore-recipes" class="hidden">
+                <h4>Additional Recipes</h4>
+                <ul id="explore-recipes-list">
+                    <!-- Recipes will be dynamically added here -->
+                </ul>
+                <button id="hide-recipes-button" class="hidden" onclick="hideRecipeSection()">Hide Recipes</button>
+            </div>
+        </div>
     </div>
+    
 
     <!-- External JS Script Links -->
     <script src="/frontend/js/api.js"></script>
     <script src="/frontend/js/app.js"></script>
 </body>
 </html>
-
 
 
 
