@@ -317,8 +317,21 @@ button:hover {
     .extra-recipes:hover {
         background-color: #333 !important;
     }
+    /* Hide elements with the 'hidden' class */
+
+.hidden {
+    display: none;
 }
 
+/* Make sure the Explore More section is displayed below the button */
+#explore-recipes {
+    margin-top: 20px;  /* Add space between the button and the recipes */
+    padding-top: 10px;
+    display: none;     /* Default state is hidden */
+}
 
-
-
+/* When visible, display the section */
+#explore-recipes.visible {
+    display: block;
+}
+}

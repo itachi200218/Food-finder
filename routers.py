@@ -34,7 +34,6 @@ def setup_routes(app):
         current_index += chunk_size
         
         # If we've reached the end of the recipes list, reset the index (optional)
-        if current_index >= Recipe.query.count():
-            current_index = 0
+       
         
         return jsonify(recipes_list)
