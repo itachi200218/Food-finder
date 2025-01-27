@@ -4,18 +4,17 @@
     box-sizing: border-box;
 }
 
-body {
-    display: flex;
-    flex-direction: row;
-    font-family: Arial, sans-serif;
-    background-color: #121212;
-    margin: 0;
-    padding: 0;
-    color: #ddd;
+    body{
+        display: flex;
+        flex-direction: row;
+        background: linear-gradient(45deg, BLACK,grey, rgb(103, 88, 90));
+        font-family: Arial, sans-serif;
+        text-align: center;
+     color: #ddd;
 }
 
 h1 {
-    color: #fff;
+    color: black;
     font-size: 2.5rem;
     text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.7);
     margin-bottom: 20px;
@@ -69,7 +68,7 @@ h1 {
 }
 
 #recipe-input:focus {
-    background-color: #444;
+    background-color: #7a7777;
     box-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
 }
 
@@ -122,7 +121,7 @@ button:hover {
 
 #recipe-details ul li {
     font-size: 1rem;
-    color: #ddd;
+    color: #665b5b;
     padding: 5px;
     border-bottom: 1px solid #444;
 }
@@ -310,4 +309,42 @@ a {
     .hidden {
         display: none;
     }
+}
+/* Apply cursor pointer to suggestions */
+/* Apply cursor pointer to suggestions */
+
+/* Apply cursor pointer to recipe details (if there's clickable content) */
+#recipe-details {
+    cursor: pointer; /* Changes the cursor to a hand when hovering */
+}
+
+/* Hover effect for suggestions */
+#recipe-details:hover {
+    background: linear-gradient(90deg, rgb(27, 26, 26), rgb(38, 28, 28), rgb(28, 28, 28)); /* Gradient background */
+    transition: background 0.3s ease; /* Smooth transition */
+}
+
+/* Suggestions container */
+#suggestionsContainer {
+    cursor: pointer; /* Hand cursor on hover */
+    padding: 10px; /* Adds padding for better spacing */
+    border-radius: 8px; /* Rounded corners */
+    background: rgb(30, 29, 29); /* Default background color */
+    color: white; /* Text color */
+    transition: background 0.3s ease; /* Smooth background transition */
+}
+
+/* Apply cursor pointer to individual suggestions in the container */
+.suggestion-item {
+    cursor: pointer; /* Hand cursor for each item */
+    padding: 8px; /* Adds some padding to the individual items */
+    border-radius: 5px; /* Rounded corners for each suggestion */
+    transition: background-color 0.3s ease, color 0.3s ease; /* Smooth hover effect */
+}
+
+/* Apply a gradient background change on hover of the individual items */
+#suggestionsContainer:hover {
+    background: linear-gradient(90deg, rgb(43, 40, 40), rgb(0, 0, 0), rgb(62, 58, 58)); /* Gradient background */
+    color: lightgreen; /* Text color on hover for contrast */
+    transition: background 0.3s ease, color 0.3s ease; /* Smooth hover transition */
 }

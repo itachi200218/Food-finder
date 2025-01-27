@@ -14,7 +14,7 @@ def setup_routes(app):
     def index():
         if request.method == "POST":
             data = request.get_json()
-            user_input = data.get("prompt", "").lower().strip()
+            user_input = data.get("prompt", "recipeName").lower().strip()
             response = handle_recipe_search(user_input)
             return jsonify(response)
         return render_template("index.html")
@@ -34,6 +34,7 @@ def setup_routes(app):
         current_index += chunk_size
         
         # If we've reached the end of the recipes list, reset the index (optional)
-       
+        if len(recipes_chunk) < chunk_size:
+            current_index = 0
         
         return jsonify(recipes_list)

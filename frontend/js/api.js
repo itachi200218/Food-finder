@@ -1,4 +1,5 @@
 // Function to fetch recipe details from the backend
+
 function fetchRecipeDetails(recipeName) {
     return fetch("/", {
         method: "POST",

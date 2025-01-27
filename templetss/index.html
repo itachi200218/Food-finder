@@ -20,14 +20,18 @@
     <div class="menu-container">
         <div class="menu">
             <h1>Food Finder</h1>
-            <!-- Search Form Section -->
+            
+            <!-- Existing Recipe Search Form Section -->
             <section class="search-section">
-                <form id="recipe-form" onsubmit="searchRecipe(event)" class="search-form">
+                <form id="recipe-form" class="search-form">
                     <label for="recipe-input" class="visually-hidden">Search for a recipe or keyword</label>
-                    <input type="text" id="recipe-input" placeholder="Enter a recipe name or keyword" required aria-label="Search for a recipe or keyword">
+                    <input type="text" id="recipe-input" placeholder="Enter a recipe name or keyword" required aria-label="Search for a recipe or keyword" oninput="showSuggestions()">
                     <button type="submit" aria-label="Search for recipes">Search</button>
                 </form>
     
+                <!-- Suggestions will be displayed here -->
+                <div id="suggestionsContainer"></div>
+                
                 <!-- Display Recipe Details Here -->
                 <div id="recipe-details" class="recipe-details"></div>
             </section>
@@ -70,12 +74,13 @@
         </div>
     </div>
     
-
     <!-- External JS Script Links -->
     <script src="/frontend/js/api.js"></script>
     <script src="/frontend/js/app.js"></script>
+    
 </body>
 </html>
+
 
 
 

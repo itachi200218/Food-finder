@@ -1,4 +1,5 @@
 import mysql.connector
+from mysql.connector import Error
 import os
 from dotenv import load_dotenv  # If using a .env file (optional)
 
@@ -29,8 +30,21 @@ def connect_to_db():
         print(f"Error connecting to database: {err}")
         return None
 
-# Example usage of the function
-connection = connect_to_db()
-if connection:
-    # You can perform your database operations here
-    connection.close()  # Always close the connection
+def execute_query(query, params=None):
+    """Executes a database query with parameterized inputs to prevent SQL injection."""
+    connection = connect_to_db()
+    if connection is None:
+        return None
+
+    try:
+        cursor = connection.cursor()
+        cursor.execute(query, params or [])
+        connection.commit()
+        return cursor.fetchall()  # Returns the result of the query
+    except Error as err:
+        print(f"Error executing query: {err}")
+    finally:
+        if connection:
+            connection.close()  # Always close the connection
+
+

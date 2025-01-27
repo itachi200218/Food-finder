@@ -22,10 +22,10 @@ sidebarItems.forEach(item => {
     });
 });
 
-
-
 // Function to display recipe details
 function displayRecipeDetails(data) {
+    console.log(data);  // Debug: log the incoming data to verify its structure
+
     const recipeDetails = document.getElementById("recipe-details");
     if (data.error) {
         recipeDetails.innerHTML = `<p>${data.error}</p>`;
@@ -65,6 +65,7 @@ function extractYouTubeId(url) {
     const match = url.match(regex);
     return match ? match[1] : null;
 }
+
 document.addEventListener("DOMContentLoaded", function () {
     const exploreButton = document.querySelector(".sidebar-button");
     const exploreRecipesSection = document.getElementById("explore-recipes");
@@ -142,7 +143,6 @@ document.addEventListener("DOMContentLoaded", function () {
             exploreRecipesList.appendChild(listItem);
         });
     }
-    
 
     // Fetch and display details for the clicked recipe
     async function getRecipeDetails(recipeName) {
@@ -184,3 +184,100 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 });
+
+
+// Function to display the matching recipes based on ingredients search
+function displayRecipeResults(recipes) {
+    const resultsContainer = document.getElementById("recipe-results");
+
+    if (recipes.length === 0) {
+        resultsContainer.innerHTML = `<p>No recipes found matching your ingredients.</p>`;
+    } else {
+        resultsContainer.innerHTML = recipes.map(recipe => {
+            // Ensure data is available for name, description, ingredients, and steps
+            const name = recipe.name || 'Recipe name not available';
+            const description = recipe.description || 'Description not available';
+            const ingredients = recipe.ingredients && recipe.ingredients.length > 0
+                ? recipe.ingredients.join(', ')
+                : 'No ingredients available';
+            const steps = recipe.steps && recipe.steps.length > 0
+                ? recipe.steps.join(' | ')  // Join steps with a separator for display
+                : 'No steps available';
+
+            return `
+                <div class="recipe-card">
+                    <h3>${name}</h3>
+                    <p>${description}</p>
+                    <p><strong>Ingredients:</strong> ${ingredients}</p>
+                    <p><strong>Steps:</strong> ${steps}</p>  <!-- Added steps here -->
+                    <a href="#" onclick="displayRecipeDetails(${JSON.stringify(recipe)})">View Recipe</a>
+                </div>
+            `;
+        }).join('');
+    }
+}
+ // Function to handle the form submission
+function searchRecipe(event) {
+    event.preventDefault();  // Prevent page reload
+    const userInput = document.getElementById("recipe-input").value;
+    
+    // Send the search input to the backend
+    fetch('/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ prompt: userInput })
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Display suggestions from the response
+        displaySuggestions(data.suggestions);
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+// Function to display multiple recipe suggestions
+function displaySuggestions(suggestions) {
+    const container = document.getElementById("suggestionsContainer");
+    container.innerHTML = '';  // Clear previous suggestions
+
+    if (suggestions && suggestions.length > 0) {
+        suggestions.forEach(suggestion => {
+            const suggestionItem = document.createElement("div");
+            suggestionItem.classList.add("suggestion");
+            suggestionItem.innerHTML = `<p>${suggestion.name}</p>`;
+
+            // When a suggestion is clicked, display recipe details
+            suggestionItem.addEventListener("click", function() {
+                displayRecipeDetails(suggestion);
+            });
+
+            container.appendChild(suggestionItem);
+        });
+    } else {
+        container.innerHTML = '<p>No suggestions found.</p>';
+    }
+}
+
+// Function to display recipe details
+function displayRecipeDetails(recipe) {
+    const detailsContainer = document.getElementById("recipe-details");
+    detailsContainer.innerHTML = `
+        <h2>${recipe.name}</h2>
+        <h3>Ingredients:</h3>
+        <ul>
+            ${recipe.ingredients.map(ingredient => `<li>${ingredient}</li>`).join('')}
+        </ul>
+        <h3>Description:</h3>
+        <p>${recipe.description}</p>
+        <h3>Steps:</h3>
+        <ol>
+            ${recipe.steps.map(step => `<li>${step}</li>`).join('')}
+        </ol>
+        <a href="${recipe.url}" target="_blank">Recipe Link</a>
+    `;
+}
+
+// Attach the searchRecipe function to the form submission
+document.getElementById("recipe-form").addEventListener("submit", searchRecipe);
