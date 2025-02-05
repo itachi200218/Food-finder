@@ -129,16 +129,54 @@ button:hover {
 #recipe-details ul li:last-child {
     border-bottom: none;
 }
-
 /* Sidebar Styling */
 .sidebar {
     width: 250px;
-    margin-left: 20px; /* Adds space between sidebar and content */
+    height: 100vh;
+    margin-left: 20px;
     background: linear-gradient(135deg, #1e1e1e, #333);
     padding: 25px;
     border-radius: 15px;
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.8);
-    flex: 0 0 250px;
+    overflow: hidden;
+    transition: all 0.5s ease;
+    position: relative; /* Ensure it stays in place */
+}
+/* Scrollable Content */
+.sidebar-content {
+    max-height: calc(100vh - 50px); /* Ensure it fits inside the sidebar */
+    overflow-y: auto; /* Enable vertical scrolling for content */
+}
+
+/* Sidebar List Styling */
+.sidebar ul {
+    list-style-type: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+/* Expanded Sidebar (50% More Background) */
+.sidebar.expanded {
+    width: 375px; /* Increase the width by 50% */
+    background: linear-gradient(135deg, #444, #000); /* Optional: Change background color for effect */
+}
+
+/* Button Styling */
+#expand-btn {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    font-size: 1rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#expand-btn:hover {
+    background-color: #45a049;
 }
 
 /* Sidebar Header */
@@ -154,19 +192,16 @@ button:hover {
 .sidebar ul {
     list-style-type: none;
     padding-left: 0;
-    margin-top: 10px;
+    margin: 20px 0; /* Add vertical space between sections */
 }
 
 .sidebar ul li {
-    font-size: 1.1rem;
+    font-size: 1rem;
     color: #ddd;
-    padding: 12px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    margin-bottom: 8px;
+    padding: 10px;
     border-radius: 8px;
-    display: flex;
-    align-items: center;
+    margin-bottom: 10px;
+    display: block; /* Ensure each list item takes the full width */
 }
 
 .sidebar ul li:hover {
@@ -202,10 +237,12 @@ a {
 
     /* Main Content */
     .menu-container {
+        display: block; /* Stack elements vertically */
+        width: 100%;
         flex-direction: column;
         align-items: center;
     }
-
+    
     .menu {
         width: 100%;
         margin-bottom: 20px;
@@ -216,6 +253,16 @@ a {
         margin-left: 0;
         margin-bottom: 20px;
         box-shadow: none; /* Remove box-shadow for mobile */
+        height: 100vh; /* Ensure the sidebar takes up the full height */
+        overflow-y: auto; /* Enable scrolling */
+    }
+
+    .sidebar-content {
+        max-height: calc(100vh - 50px); /* Fit content inside the sidebar */
+    }
+
+    .sidebar.expanded {
+        width: 100%; /* Sidebar expands to 100% width on mobile */
     }
 
     /* Recipe Form */
@@ -293,8 +340,6 @@ a {
         background-color: #333 !important;
     }
 
-    
-
     /* Toggle extra recipes visibility */
     #explore-recipes {
         margin-top: 20px;
@@ -305,14 +350,14 @@ a {
     #explore-recipes.visible {
         display: block;
     }
+
     /* Hide extra recipes by default */
     .hidden {
         display: none;
     }
 }
-/* Apply cursor pointer to suggestions */
-/* Apply cursor pointer to suggestions */
 
+/* Apply cursor pointer to suggestions */
 /* Apply cursor pointer to recipe details (if there's clickable content) */
 #recipe-details {
     cursor: pointer; /* Changes the cursor to a hand when hovering */
@@ -334,17 +379,36 @@ a {
     transition: background 0.3s ease; /* Smooth background transition */
 }
 
-/* Apply cursor pointer to individual suggestions in the container */
-.suggestion-item {
-    cursor: pointer; /* Hand cursor for each item */
-    padding: 8px; /* Adds some padding to the individual items */
-    border-radius: 5px; /* Rounded corners for each suggestion */
-    transition: background-color 0.3s ease, color 0.3s ease; /* Smooth hover effect */
+/* Recipe Item Styling */
+.recipe-description, .recipe-ingredients, .recipe-steps, .recipe-more-info {
+    margin-bottom: 15px;
+    font-size: 1rem;
+    color: white;
+    display: block;
 }
 
-/* Apply a gradient background change on hover of the individual items */
-#suggestionsContainer:hover {
-    background: linear-gradient(90deg, rgb(43, 40, 40), rgb(0, 0, 0), rgb(62, 58, 58)); /* Gradient background */
-    color: lightgreen; /* Text color on hover for contrast */
-    transition: background 0.3s ease, color 0.3s ease; /* Smooth hover transition */
+.recipe-title {
+    font-size: 1.5rem;
+    font-weight: bold;;
+    color: white;
+    text-decoration: none;
+    display: block; /* Makes the recipe name appear as a block element */
+    margin-bottom: 10px;
+}
+
+.recipe-title:hover {
+    color: #4CAF50;
+}
+
+.recipe-ingredients, .recipe-steps {
+    font-size: 1rem;
+}
+
+.recipe-more-info a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.recipe-more-info a:hover {
+    text-decoration: underline;
 }

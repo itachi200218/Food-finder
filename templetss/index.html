@@ -33,54 +33,81 @@
                 <div id="suggestionsContainer"></div>
                 
                 <!-- Display Recipe Details Here -->
-                <div id="recipe-details" class="recipe-details"></div>
+                <!-- Display Recipe Details Here -->
+<div id="recipe-details" class="recipe-details">
+    <!-- This will be dynamically filled with recipe details -->
+    <div id="recipe-steps">
+        
+        <ul id="steps-list">
+            <!-- Steps will be dynamically inserted here -->
+        </ul>
+    </div>
+</div>
+
             </section>
         </div>
     
         <!-- Sidebar with Recipe Categories -->
         <div class="sidebar">
-            <h3>Recipe Categories</h3>
-            <!-- Veg Recipes -->
-            <h4>Veg</h4>
-            <ul>
-                <li><a href="#" onclick="getRecipeDetails('Vegetable Biryani')"><i class="fas fa-lemon"></i> Vegetable Biryani</a></li>
-                <li><a href="#" onclick="getRecipeDetails('Paneer Butter Masala')"><i class="fas fa-carrot"></i> Paneer Butter Masala</a></li>
-                <li><a href="#" onclick="getRecipeDetails('Chole Bhature')"><i class="fas fa-leaf"></i> Chole Bhature</a></li>
-                <li><a href="#" onclick="getRecipeDetails('Palak Paneer')"><i class="fas fa-pizza-slice"></i> Palak Paneer</a></li>
-                <li><a href="#" onclick="getRecipeDetails('Stuffed Paratha')"><i class="fas fa-bread-slice"></i> Stuffed Paratha</a></li>
-            </ul>
-    
-            <!-- Non-Veg Recipes -->
-            <h4>Non-Veg</h4>
-            <ul id="non-veg-recipes">
-                <li><a href="#" onclick="getRecipeDetails('Chicken Biryani')"><i class="fas fa-drumstick-bite"></i> Chicken Biryani</a></li>
-                <li><a href="#" onclick="getRecipeDetails('Butter Chicken')"><i class="fas fa-drumstick-bite"></i> Butter Chicken</a></li>
-                <li><a href="#" onclick="getRecipeDetails('Mutton Curry')"><i class="fas fa-bone"></i> Mutton Curry</a></li>
-                <li><a href="#" onclick="getRecipeDetails('Fish Fry')"><i class="fas fa-fish"></i> Fish Fry</a></li>
-                <li><a href="#" onclick="getRecipeDetails('Chicken Korma')"><i class="fas fa-drumstick-bite"></i> Chicken Korma</a></li>
-            </ul>
-    
-            <!-- Explore More Button -->
-            <button class="sidebar-button" onclick="toggleExploreMore()">Explore More</button>
-    
-            <!-- Recipes Section (Initially hidden) -->
-            <div id="explore-recipes" class="hidden">
-                <h4>Additional Recipes</h4>
-                <ul id="explore-recipes-list">
-                    <!-- Recipes will be dynamically added here -->
-                </ul>
-                <button id="hide-recipes-button" class="hidden" onclick="hideRecipeSection()">Hide Recipes</button>
-            </div>
-        </div>
+            <div class="sidebar-content">
+    <h3>Recipe Categories</h3>
+
+    <!-- Veg Recipes -->
+    <h4>Veg</h4>
+    <ul id="veg-recipes">
+        <li><a href="#" onclick="getRecipeDetails('Vegetable Biryani')"><i class="fas fa-lemon"></i> Vegetable Biryani</a></li>
+        <li><a href="#" onclick="getRecipeDetails('Paneer Butter Masala')"><i class="fas fa-carrot"></i> Paneer Butter Masala</a></li>
+        <li><a href="#" onclick="getRecipeDetails('Chole Bhature')"><i class="fas fa-leaf"></i> Chole Bhature</a></li>
+        <li><a href="#" onclick="getRecipeDetails('Palak Paneer')"><i class="fas fa-pizza-slice"></i> Palak Paneer</a></li>
+        <li><a href="#" onclick="getRecipeDetails('Stuffed Paratha')"><i class="fas fa-bread-slice"></i> Stuffed Paratha</a></li>
+    </ul>
+    <button class="sidebar-button" onclick="toggleExploreMore('veg-recipes', 'veg')">Explore More</button>
+
+    <!-- Non-Veg Recipes -->
+    <h4>Non-Veg</h4>
+    <ul id="non-veg-recipes">
+        <li><a href="#" onclick="getRecipeDetails('Chicken Biryani')"><i class="fas fa-drumstick-bite"></i> Chicken Biryani</a></li>
+        <li><a href="#" onclick="getRecipeDetails('Butter Chicken')"><i class="fas fa-drumstick-bite"></i> Butter Chicken</a></li>
+        <li><a href="#" onclick="getRecipeDetails('Mutton Curry')"><i class="fas fa-bone"></i> Mutton Curry</a></li>
+        <li><a href="#" onclick="getRecipeDetails('Fish Fry')"><i class="fas fa-fish"></i> Fish Fry</a></li>
+        <li><a href="#" onclick="getRecipeDetails('Chicken Korma')"><i class="fas fa-drumstick-bite"></i> Chicken Korma</a></li>
+    </ul>
+    <button class="sidebar-button" onclick="toggleExploreMore('non-veg-recipes', 'non-veg')">Explore More</button>
+
+    <!-- Seafood Recipes -->
+    <h4>Sea Food</h4>
+    <ul id="sea-food-recipes">
+        <li><a href="#" onclick="getRecipeDetails('Prawn Masala')"><i class="fas fa-fish"></i> Prawn Masala</a></li>
+        <li><a href="#" onclick="getRecipeDetails('Crab Curry')"><i class="fas fa-fish"></i> Crab Curry</a></li>
+        <li><a href="#" onclick="getRecipeDetails('Grilled Fish')"><i class="fas fa-fish"></i> Grilled Fish</a></li>
+    </ul>
+    <button class="sidebar-button" onclick="toggleExploreMore('sea-food-recipes', 'sea food')">Explore More</button>
+
+    <!-- Street Food Recipes -->
+    <h4>Street Food</h4>
+    <ul id="street-food-recipes">
+        <li><a href="#" onclick="getRecipeDetails('Pani Puri')"><i class="fas fa-utensils"></i> Pani Puri</a></li>
+        <li><a href="#" onclick="getRecipeDetails('Vada Pav')"><i class="fas fa-bread-slice"></i> Vada Pav</a></li>
+        <li><a href="#" onclick="getRecipeDetails('Dhokla')"><i class="fas fa-bread-slice"></i> Dhokla</a></li>
+    </ul>
+    <button class="sidebar-button" onclick="toggleExploreMore('street-food-recipes', 'street food')">Explore More</button>
+
+    <!-- Tiffin Recipes -->
+    <h4>Tiffin</h4>
+    <ul id="tiffin-recipes">
+        <li><a href="#" onclick="getRecipeDetails('masala dosa')"><i class="fas fa-utensils"></i> masala dosa</a></li>
+        <li><a href="#" onclick="getRecipeDetails('Upma')"><i class="fas fa-bread-slice"></i> Upma</a></li>
+        <li><a href="#" onclick="getRecipeDetails('Idli')"><i class="fas fa-bread-slice"></i> Idli</a></li>
+    </ul>
+    <button class="sidebar-button" onclick="toggleExploreMore('tiffin-recipes', 'tiffin')">Explore More</button>
+</div>
     </div>
-    
     <!-- External JS Script Links -->
     <script src="/frontend/js/api.js"></script>
     <script src="/frontend/js/app.js"></script>
-    
+
 </body>
 </html>
-
 
 
 

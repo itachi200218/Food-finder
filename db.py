@@ -1,13 +1,13 @@
+from flask import Flask, jsonify, request
+from dotenv import load_dotenv
+import os
 import mysql.connector
 from mysql.connector import Error
-import os
-from dotenv import load_dotenv  # If using a .env file (optional)
 
-# Load environment variables from .env file (if you're using this option)
-load_dotenv()
+app = Flask(__name__)
+load_dotenv()  # Load environment variables from .env file
 
 def connect_to_db():
-    """Establish a connection to the MySQL database using environment variables."""
     host = os.getenv("DB_HOST")
     user = os.getenv("DB_USER")
     password = os.getenv("DB_PASSWORD")
@@ -30,8 +30,17 @@ def connect_to_db():
         print(f"Error connecting to database: {err}")
         return None
 
+@app.route("/")
+def index():
+    """Simple route to test database connection."""
+    query = "SELECT 'Hello from MySQL on Vercel!' AS message"
+    result = execute_query(query)
+    if result:
+        return jsonify({"message": result[0][0]})
+    else:
+        return jsonify({"error": "Failed to fetch data"}), 500
+
 def execute_query(query, params=None):
-    """Executes a database query with parameterized inputs to prevent SQL injection."""
     connection = connect_to_db()
     if connection is None:
         return None
@@ -40,11 +49,14 @@ def execute_query(query, params=None):
         cursor = connection.cursor()
         cursor.execute(query, params or [])
         connection.commit()
-        return cursor.fetchall()  # Returns the result of the query
+        return cursor.fetchall()
     except Error as err:
         print(f"Error executing query: {err}")
+        return None
     finally:
         if connection:
-            connection.close()  # Always close the connection
+            connection.close()
 
+if __name__ == "__main__":
+    app.run(debug=True)
 

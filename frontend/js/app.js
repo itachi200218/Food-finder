@@ -66,200 +66,82 @@ function extractYouTubeId(url) {
     return match ? match[1] : null;
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-    const exploreButton = document.querySelector(".sidebar-button");
-    const exploreRecipesSection = document.getElementById("explore-recipes");
-    const exploreRecipesList = document.getElementById("explore-recipes-list");
-    const hideRecipesButton = document.getElementById("hide-recipes-button");
 
-    // Initially hide the Explore Recipes section and the Hide Recipes button
-    exploreRecipesSection.style.display = "none";
-    hideRecipesButton.style.display = "none";
 
-    // Variable to track the current page (if pagination is implemented on the backend)
-    let currentPage = 1;
+    // Function to display the matching recipes based on ingredients search
+    function displayRecipeResults(recipes) {
+        const resultsContainer = document.getElementById("recipe-results");
 
-    // Function to load more recipes
-    exploreButton.addEventListener("click", function () {
-        // Show the section and the hide button
-        exploreRecipesSection.style.display = "block";
-        hideRecipesButton.style.display = "inline-block"; // Show the Hide button
-        fetchRecipes(currentPage); // Pass current page to fetch new recipes
-    });
+        if (recipes.length === 0) {
+            resultsContainer.innerHTML = `<p>No recipes found matching your ingredients.</p>`;
+        } else {
+            resultsContainer.innerHTML = recipes.map(recipe => {
+                // Ensure data is available for name, description, ingredients, and steps
+                const name = recipe.name || 'Recipe name not available';
+                const description = recipe.description || 'Description not available';
+                const ingredients = recipe.ingredients && recipe.ingredients.length > 0
+                    ? recipe.ingredients.join(', ')
+                    : 'No ingredients available';
+                const steps = recipe.steps && recipe.steps.length > 0
+                    ? recipe.steps.join(' | ')  // Join steps with a separator for display
+                    : 'No steps available';
 
-    // Function to hide the Explore Recipes section
-    hideRecipesButton.addEventListener("click", function () {
-        exploreRecipesSection.style.display = "none";
-        hideRecipesButton.style.display = "none"; // Hide the button too
-    });
-
-    // Fetch recipes from the backend
-    async function fetchRecipes(page) {
-        try {
-            const response = await fetch(`/get-recipes?page=${page}`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to fetch recipes');
-            }
-
-            const recipes = await response.json();
-            displayRecipes(recipes);
-
-            // Increment page number for the next load
-            currentPage++;
-        } catch (error) {
-            console.error("Error fetching recipes:", error);
+                return `
+                    <div class="recipe-card">
+                        <h3>${name}</h3>
+                        <p>${description}</p>
+                        <p><strong>Ingredients:</strong> ${ingredients}</p>
+                        <p><strong>Steps:</strong> ${steps}</p>  <!-- Added steps here -->
+                        <a href="#" onclick="displayRecipeDetails(${JSON.stringify(recipe)})">View Recipe</a>
+                    </div>
+                `;
+            }).join('');
         }
     }
 
-    // Function to display the fetched recipes in the "Explore More" section
-    function displayRecipes(recipes) {
-        // Add each new recipe to the list (without clearing the existing ones)
-        recipes.forEach(recipe => {
-            const listItem = document.createElement("li");
-    
-            // Add the 'recipe-container' class for black background
-            listItem.classList.add("recipe-container");
-    
-            // Create the anchor tag with recipe name
-            const anchorTag = document.createElement("a");
-            anchorTag.href = "#";
-            anchorTag.innerHTML = `
-                <i class="${recipe.icon}"></i> ${recipe.name}
-            `;
-    
-            // Add click event to the anchor tag
-            anchorTag.addEventListener("click", function () {
-                getRecipeDetails(recipe.name);  // Fetch the full details when clicked
-            });
-    
-            // Append the anchor tag to the list item
-            listItem.appendChild(anchorTag);
-            exploreRecipesList.appendChild(listItem);
-        });
+    // Function to handle the form submission
+    function searchRecipe(event) {
+        event.preventDefault();  // Prevent page reload
+        const userInput = document.getElementById("recipe-input").value;
+        
+        // Send the search input to the backend
+        fetch('/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ prompt: userInput })
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Display suggestions from the response
+            displaySuggestions(data.suggestions);
+        })
+        .catch(error => console.error('Error:', error));
     }
 
-    // Fetch and display details for the clicked recipe
-    async function getRecipeDetails(recipeName) {
-        try {
-            const response = await fetch("/", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    prompt: recipeName,
-                }),
+    // Function to display multiple recipe suggestions
+    function displaySuggestions(suggestions) {
+        const container = document.getElementById("suggestionsContainer");
+        container.innerHTML = '';  // Clear previous suggestions
+
+        if (suggestions && suggestions.length > 0) {
+            suggestions.forEach(suggestion => {
+                const suggestionItem = document.createElement("div");
+                suggestionItem.classList.add("suggestion");
+                suggestionItem.innerHTML = `<p>${suggestion.name}</p>`;
+
+                // When a suggestion is clicked, display recipe details
+                suggestionItem.addEventListener("click", function() {
+                    displayRecipeDetails(suggestion);
+                });
+
+                container.appendChild(suggestionItem);
             });
-
-            const recipeDetails = await response.json();
-
-            if (recipeDetails.error) {
-                alert(recipeDetails.error);
-                return;
-            }
-
-            // Update the recipe details section with the received data
-            const recipeDetailsSection = document.getElementById("recipe-details");
-            recipeDetailsSection.innerHTML = `
-                <h3>${recipeDetails.name}</h3>
-                <p>${recipeDetails.description}</p>
-                <h4>Ingredients:</h4>
-                <ul>
-                    ${recipeDetails.ingredients.map(ingredient => `<li>${ingredient}</li>`).join('')}
-                </ul>
-                <h4>Steps:</h4>
-                <ol>
-                    ${recipeDetails.steps.map(step => `<li>${step}</li>`).join('')}
-                </ol>
-                <a href="${recipeDetails.url}" target="_blank">Full Recipe</a>
-            `;
-        } catch (error) {
-            console.error("Error fetching recipe details:", error);
+        } else {
+            container.innerHTML = '<p>No suggestions found.</p>';
         }
     }
-});
-
-
-// Function to display the matching recipes based on ingredients search
-function displayRecipeResults(recipes) {
-    const resultsContainer = document.getElementById("recipe-results");
-
-    if (recipes.length === 0) {
-        resultsContainer.innerHTML = `<p>No recipes found matching your ingredients.</p>`;
-    } else {
-        resultsContainer.innerHTML = recipes.map(recipe => {
-            // Ensure data is available for name, description, ingredients, and steps
-            const name = recipe.name || 'Recipe name not available';
-            const description = recipe.description || 'Description not available';
-            const ingredients = recipe.ingredients && recipe.ingredients.length > 0
-                ? recipe.ingredients.join(', ')
-                : 'No ingredients available';
-            const steps = recipe.steps && recipe.steps.length > 0
-                ? recipe.steps.join(' | ')  // Join steps with a separator for display
-                : 'No steps available';
-
-            return `
-                <div class="recipe-card">
-                    <h3>${name}</h3>
-                    <p>${description}</p>
-                    <p><strong>Ingredients:</strong> ${ingredients}</p>
-                    <p><strong>Steps:</strong> ${steps}</p>  <!-- Added steps here -->
-                    <a href="#" onclick="displayRecipeDetails(${JSON.stringify(recipe)})">View Recipe</a>
-                </div>
-            `;
-        }).join('');
-    }
-}
- // Function to handle the form submission
-function searchRecipe(event) {
-    event.preventDefault();  // Prevent page reload
-    const userInput = document.getElementById("recipe-input").value;
-    
-    // Send the search input to the backend
-    fetch('/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ prompt: userInput })
-    })
-    .then(response => response.json())
-    .then(data => {
-        // Display suggestions from the response
-        displaySuggestions(data.suggestions);
-    })
-    .catch(error => console.error('Error:', error));
-}
-
-// Function to display multiple recipe suggestions
-function displaySuggestions(suggestions) {
-    const container = document.getElementById("suggestionsContainer");
-    container.innerHTML = '';  // Clear previous suggestions
-
-    if (suggestions && suggestions.length > 0) {
-        suggestions.forEach(suggestion => {
-            const suggestionItem = document.createElement("div");
-            suggestionItem.classList.add("suggestion");
-            suggestionItem.innerHTML = `<p>${suggestion.name}</p>`;
-
-            // When a suggestion is clicked, display recipe details
-            suggestionItem.addEventListener("click", function() {
-                displayRecipeDetails(suggestion);
-            });
-
-            container.appendChild(suggestionItem);
-        });
-    } else {
-        container.innerHTML = '<p>No suggestions found.</p>';
-    }
-}
-
 // Function to display recipe details
 function displayRecipeDetails(recipe) {
     const detailsContainer = document.getElementById("recipe-details");
@@ -278,6 +160,73 @@ function displayRecipeDetails(recipe) {
         <a href="${recipe.url}" target="_blank">Recipe Link</a>
     `;
 }
-
 // Attach the searchRecipe function to the form submission
 document.getElementById("recipe-form").addEventListener("submit", searchRecipe);
+let currentPage = 1; // Track current page for pagination
+let maxRecipes = 5;  // Max number of recipes per page
+
+function toggleExploreMore(categoryId, categoryName) {
+    const categoryList = document.getElementById(categoryId);
+    const exploreButton = document.querySelector(`#${categoryId} + .sidebar-button`);
+    const sidebar = document.querySelector('.sidebar');
+
+    if (exploreButton.innerText === "Explore More") {
+        // Expand sidebar
+        sidebar.classList.add('expanded');
+
+        // Fetch 5 recipes per page based on currentPage
+        fetch(`/get-recipes?category=${categoryName}&page=${currentPage}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.length > 0) {
+                    data.forEach(recipe => {
+                        const li = document.createElement('li');
+                        li.innerHTML = `
+                            <a href="${recipe.url}" target="_blank" class="recipe-title">
+                                <i class="fas fa-utensils"></i> ${recipe.name}
+                            </a>
+                            <div class="recipe-description">
+                                <p><strong>Description:</strong> ${recipe.description}</p>
+                            </div>
+                            <div class="recipe-ingredients">
+                                <p><strong>Ingredients:</strong> ${recipe.ingredients}</p>
+                            </div>
+                            <div class="recipe-steps">
+                                <p><strong>Steps:</strong> ${recipe.steps}</p>
+                            </div>
+                            <div class="recipe-more-info">
+                                <p><strong>More Info:</strong> <a href="${recipe.url}" target="_blank">Visit Recipe Page</a></p>
+                            </div>
+                        `;
+                        categoryList.appendChild(li);
+                    });
+
+                    // Ensure sidebar scrolls to the bottom to show newly added recipes
+                    sidebar.scrollTop = sidebar.scrollHeight;
+
+                    // Update button text and increase the page number
+                    exploreButton.innerText = "Show Less";
+                    currentPage++;
+                } else {
+                    alert("No more recipes available.");
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching recipes:', error);
+            });
+    } else {
+        // Collapse the category list and hide extra recipes
+        collapseCategoryList(categoryList);
+        exploreButton.innerText = "Explore More";
+        sidebar.classList.remove('expanded');
+        sidebar.scrollTop = 0; // Reset scroll position
+    }
+}
+
+function collapseCategoryList(categoryList) {
+    const allRecipes = categoryList.getElementsByTagName('li');
+    // Remove all recipes except the first 5
+    while (allRecipes.length > maxRecipes) {
+        categoryList.removeChild(allRecipes[allRecipes.length - 1]);
+    }
+}

@@ -1,25 +1,32 @@
 from rapidfuzz import process as rapid_process
-from models import Recipe  # Import Recipe model
+from models import Recipe, Category  # Import Recipe and Category models
 from extensions import db  # Import db from extensions.py
 import logging
 
 # Set up the logger
 logger = logging.getLogger(__name__)
 
-def handle_recipe_search(user_input):
+def handle_recipe_search(user_input, category_name=None):
     try:
         # Clean the user input
         user_input = user_input.lower().strip()
         keywords = [kw.strip() for kw in user_input.split(" ") if kw]  # Split into keywords
 
         # Log the received input and keywords
-        logger.info(f"Received user input: '{user_input}', Keywords: {keywords}")
+        logger.info(f"Received user input: '{user_input}', Keywords: {keywords}, Category: {category_name}")
 
         # Initialize the response
         response = {}
 
+        # Build the base query to fetch recipes with a join to categories
+        query = db.session.query(Recipe).join(Category, Recipe.category_id == Category.id)
+
+        if category_name:
+            # Filter by category dynamically using the category_name
+            query = query.filter(Category.name.ilike(f"%{category_name}%"))
+
         # Exact Match: Check if all keywords are in name, ingredients, or steps
-        matched_recipe = db.session.query(Recipe).filter(
+        matched_recipe = query.filter(
             db.and_(
                 *[db.or_(
                     Recipe.name.ilike(f"%{kw}%"),
@@ -37,13 +44,14 @@ def handle_recipe_search(user_input):
                 "description": matched_recipe.description,
                 "steps": matched_recipe.steps.split(" | "),
                 "url": matched_recipe.url,
+                "category": matched_recipe.category.name,  # Include category in the response
                 "suggestions": []
             }
             logger.info(f"Exact match found: {matched_recipe.name}")
             return response
 
         # Fuzzy matching if no exact match is found
-        recipes = db.session.query(Recipe).all()
+        recipes = query.all()
         recipe_data = [{"name": r.name, "ingredients": r.ingredients, "steps": r.steps} for r in recipes]
 
         # Prepare lists for fuzzy matching (including steps)
@@ -85,7 +93,7 @@ def handle_recipe_search(user_input):
 
         # Fetch the recipes based on the best matches
         matched_values = [match[0] for match in best_matches]
-        suggestions = db.session.query(Recipe).filter(
+        suggestions = query.filter(
             Recipe.name.in_(matched_values) |
             Recipe.ingredients.in_(matched_values) |
             Recipe.steps.in_(matched_values)
@@ -117,85 +125,6 @@ def handle_recipe_search(user_input):
         # Log any errors
         logger.error(f"Error processing recipe search for input '{user_input}': {e}")
         return {"error": "An unexpected error occurred while processing the request.", "suggestions": []}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
