@@ -10,95 +10,6 @@ document.getElementById("recipe-form").addEventListener("submit", function (even
 });
 
 // Event listeners for sidebar clicks
-const sidebarItems = document.querySelectorAll(".sidebar ul li");
-sidebarItems.forEach(item => {
-    item.addEventListener("click", function () {
-        const recipeName = item.textContent.trim();
-        fetchRecipeDetails(recipeName)
-            .then(data => displayRecipeDetails(data))
-            .catch(() => {
-                document.getElementById("recipe-details").innerHTML = `<p>Something went wrong. Please try again.</p>`;
-            });
-    });
-});
-
-// Function to display recipe details
-function displayRecipeDetails(data) {
-    console.log(data);  // Debug: log the incoming data to verify its structure
-
-    const recipeDetails = document.getElementById("recipe-details");
-    if (data.error) {
-        recipeDetails.innerHTML = `<p>${data.error}</p>`;
-    } else {
-        // Extract the YouTube video ID if the URL is valid
-        const videoEmbed = data.url ? `
-            <h3>Watch the recipe video:</h3>
-            <div class="video-container">
-                <iframe width="560" height="315" 
-                    src="https://www.youtube.com/embed/${extractYouTubeId(data.url)}" 
-                    frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
-                </iframe>
-            </div>
-        ` : '';
-
-        // Display both the description, ingredients, and video
-        recipeDetails.innerHTML = `
-            <h2>Description:</h2>
-            <p>${data.description}</p>
-            <h2>Ingredients:</h2>
-            <ul>
-                ${data.ingredients.map(ingredient => `<li>${ingredient}</li>`).join('')}
-            </ul>
-            <h2>Steps:</h2>
-            <ol>
-                ${data.steps.map(step => `<li>${step}</li>`).join('')}
-            </ol>
-            ${videoEmbed}
-        `;
-    }
-}
-
-// Helper function to extract YouTube video ID from URL
-function extractYouTubeId(url) {
-    // Regex for extracting YouTube video ID for both regular videos and shorts
-    const regex = /(?:https?:\/\/(?:www\.)?youtube\.com\/(?:v\/|e(?:mbed)?\/|\S*?[?&]v=)|(?:https?:\/\/)?(?:www\.)?youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/;
-    const match = url.match(regex);
-    return match ? match[1] : null;
-}
-
-
-
-    // Function to display the matching recipes based on ingredients search
-    function displayRecipeResults(recipes) {
-        const resultsContainer = document.getElementById("recipe-results");
-
-        if (recipes.length === 0) {
-            resultsContainer.innerHTML = `<p>No recipes found matching your ingredients.</p>`;
-        } else {
-            resultsContainer.innerHTML = recipes.map(recipe => {
-                // Ensure data is available for name, description, ingredients, and steps
-                const name = recipe.name || 'Recipe name not available';
-                const description = recipe.description || 'Description not available';
-                const ingredients = recipe.ingredients && recipe.ingredients.length > 0
-                    ? recipe.ingredients.join(', ')
-                    : 'No ingredients available';
-                const steps = recipe.steps && recipe.steps.length > 0
-                    ? recipe.steps.join(' | ')  // Join steps with a separator for display
-                    : 'No steps available';
-
-                return `
-                    <div class="recipe-card">
-                        <h3>${name}</h3>
-                        <p>${description}</p>
-                        <p><strong>Ingredients:</strong> ${ingredients}</p>
-                        <p><strong>Steps:</strong> ${steps}</p>  <!-- Added steps here -->
-                        <a href="#" onclick="displayRecipeDetails(${JSON.stringify(recipe)})">View Recipe</a>
-                    </div>
-                `;
-            }).join('');
-        }
-    }
-
     // Function to handle the form submission
     function searchRecipe(event) {
         event.preventDefault();  // Prevent page reload
@@ -142,91 +53,174 @@ function extractYouTubeId(url) {
             container.innerHTML = '<p>No suggestions found.</p>';
         }
     }
-// Function to display recipe details
-function displayRecipeDetails(recipe) {
-    const detailsContainer = document.getElementById("recipe-details");
-    detailsContainer.innerHTML = `
-        <h2>${recipe.name}</h2>
-        <h3>Ingredients:</h3>
-        <ul>
-            ${recipe.ingredients.map(ingredient => `<li>${ingredient}</li>`).join('')}
-        </ul>
-        <h3>Description:</h3>
-        <p>${recipe.description}</p>
-        <h3>Steps:</h3>
-        <ol>
-            ${recipe.steps.map(step => `<li>${step}</li>`).join('')}
-        </ol>
-        <a href="${recipe.url}" target="_blank">Recipe Link</a>
-    `;
-}
-// Attach the searchRecipe function to the form submission
-document.getElementById("recipe-form").addEventListener("submit", searchRecipe);
-let currentPage = 1; // Track current page for pagination
-let maxRecipes = 5;  // Max number of recipes per page
+// Initialize current page for each category and store past recipes
+// Store the page for fetching the recipes based on category
+// Initialize current page for each category and store past recipes
+let currentPages = {};
+let pastRecipes = {};
 
-function toggleExploreMore(categoryId, categoryName) {
+// Function to fetch recipes for a specific category
+function fetchCategoryRecipes(categoryId, categoryName) {
     const categoryList = document.getElementById(categoryId);
-    const exploreButton = document.querySelector(`#${categoryId} + .sidebar-button`);
-    const sidebar = document.querySelector('.sidebar');
 
-    if (exploreButton.innerText === "Explore More") {
-        // Expand sidebar
-        sidebar.classList.add('expanded');
+    if (!currentPages[categoryName]) currentPages[categoryName] = 1;
+    if (!pastRecipes[categoryName]) pastRecipes[categoryName] = [];
 
-        // Fetch 5 recipes per page based on currentPage
-        fetch(`/get-recipes?category=${categoryName}&page=${currentPage}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.length > 0) {
-                    data.forEach(recipe => {
-                        const li = document.createElement('li');
-                        li.innerHTML = `
-                            <a href="${recipe.url}" target="_blank" class="recipe-title">
-                                <i class="fas fa-utensils"></i> ${recipe.name}
-                            </a>
-                            <div class="recipe-description">
-                                <p><strong>Description:</strong> ${recipe.description}</p>
-                            </div>
-                            <div class="recipe-ingredients">
-                                <p><strong>Ingredients:</strong> ${recipe.ingredients}</p>
-                            </div>
-                            <div class="recipe-steps">
-                                <p><strong>Steps:</strong> ${recipe.steps}</p>
-                            </div>
-                            <div class="recipe-more-info">
-                                <p><strong>More Info:</strong> <a href="${recipe.url}" target="_blank">Visit Recipe Page</a></p>
-                            </div>
-                        `;
-                        categoryList.appendChild(li);
+    fetch(`/get-recipes?category=${categoryName}&page=${currentPages[categoryName]}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data && data.length > 0) {
+                pastRecipes[categoryName].push(...data);
+
+                data.forEach(recipe => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `
+                        <a href="#" class="recipe-link" data-id="${recipe.id}">
+                            <i class="fas fa-utensils"></i> ${recipe.name}
+                        </a>
+                        <div class="recipe-description">
+                            <p><strong>Description:</strong> ${recipe.description}</p>
+                        </div>
+                    `;
+                    categoryList.appendChild(li);
+                });
+
+                // Attach click event to newly added links
+                document.querySelectorAll('.recipe-link').forEach(link => {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const target = e.currentTarget;  // Ensure you get the <a> element itself
+                        const recipeId = target.getAttribute('data-id');
+                        showRecipeDetail(recipeId);
                     });
+                });
 
-                    // Ensure sidebar scrolls to the bottom to show newly added recipes
-                    sidebar.scrollTop = sidebar.scrollHeight;
+                currentPages[categoryName]++;
+            } else {
+                console.log(`No more recipes found for ${categoryName}.`);
+            }
+        })
+        .catch(error => console.error(`Error fetching recipes for ${categoryName}:`, error));
+}
 
-                    // Update button text and increase the page number
-                    exploreButton.innerText = "Show Less";
-                    currentPage++;
-                } else {
-                    alert("No more recipes available.");
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching recipes:', error);
-            });
+// Function to fetch full recipe details by recipe ID and display them
+function showRecipeDetail(recipeId) {
+    if (!recipeId) {
+        console.error('Invalid recipe ID:', recipeId);
+        return;
+    }
+
+    console.log(`Fetching details for recipe ID: ${recipeId}`);
+    fetch(`/get-recipe-detail?id=${recipeId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                throw new Error(data.error);
+            }
+            displayRecipeDetails(data);
+        })
+        .catch(error => {
+            console.error('Error fetching recipe details:', error);
+            document.getElementById("recipe-details").innerHTML = `<p>Failed to load recipe details. Please try again later.</p>`;
+        });
+}
+
+
+// Function to display the recipe details in the main section
+function displayRecipeDetails(data) {
+    const recipeDetails = document.getElementById("recipe-details");
+
+    if (data.error) {
+        recipeDetails.innerHTML = `<p>${data.error}</p>`;
     } else {
-        // Collapse the category list and hide extra recipes
-        collapseCategoryList(categoryList);
-        exploreButton.innerText = "Explore More";
-        sidebar.classList.remove('expanded');
-        sidebar.scrollTop = 0; // Reset scroll position
+        const videoEmbed = data.url ? `
+            <h3>Watch the recipe video:</h3>
+            <div class="video-container">
+                <iframe width="560" height="315" 
+                    src="https://www.youtube.com/embed/${extractYouTubeId(data.url)}" 
+                    frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
+                </iframe>
+            </div>
+        ` : '';
+
+        recipeDetails.innerHTML = `
+            <h1>${data.name}</h1>
+            <h2>Description:</h2>
+            <p>${data.description}</p>
+            <h2>Ingredients:</h2>
+            <ul>
+                ${data.ingredients.map(ingredient => `<li>${ingredient}</li>`).join('')}
+            </ul>
+            <h2>Steps:</h2>
+            <ol>
+                ${data.steps.map(step => `<li>${step}</li>`).join('')}
+            </ol>
+            ${videoEmbed}
+        `;
     }
 }
 
-function collapseCategoryList(categoryList) {
-    const allRecipes = categoryList.getElementsByTagName('li');
-    // Remove all recipes except the first 5
-    while (allRecipes.length > maxRecipes) {
-        categoryList.removeChild(allRecipes[allRecipes.length - 1]);
+// Helper function to extract YouTube video ID from URL
+function extractYouTubeId(url) {
+    const match = url.match(/(?:https?:\/\/)?(?:www\.)?youtu(?:be\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|\.be\/)([a-zA-Z0-9_-]{11})/);
+    return match ? match[1] : '';
+}
+
+
+// Function to toggle expand/collapse for a category and add infinite scrolling
+function toggleCategory(categoryId, categoryName) {
+    const categoryDiv = document.getElementById(categoryId);
+    const button = document.querySelector(`button[onclick="toggleCategory('${categoryId}', '${categoryName}')"]`);
+    const sidebar = document.querySelector('.sidebar');  // To control sidebar
+    const isExpanded = categoryDiv.style.display === "block";
+
+    // Apply styles for the expand/collapse button
+    button.classList.add("expand-btn");
+
+    // Add or remove category background color
+    if (isExpanded) {
+        categoryDiv.style.display = "none"; // Collapse
+        categoryDiv.classList.remove("category-expanded"); // Remove expanded background
+        categoryDiv.classList.add("category-collapsed"); // Set collapsed background
+        button.textContent = `Expand ${categoryName}`;
+    } else {
+        categoryDiv.style.display = "block"; // Expand
+        categoryDiv.classList.remove("category-collapsed"); // Remove collapsed background
+        categoryDiv.classList.add("category-expanded"); // Set expanded background
+        button.textContent = `Collapse ${categoryName}`;
+
+        if (!categoryDiv.hasAttribute('data-loaded')) {
+            fetchCategoryRecipes(categoryId, categoryName); // Initial fetch
+            categoryDiv.setAttribute('data-loaded', 'true');
+        }
+
+        // Add scroll listener for infinite scroll
+        categoryDiv.addEventListener('scroll', function () {
+            if (categoryDiv.scrollTop + categoryDiv.clientHeight >= categoryDiv.scrollHeight - 50) {
+                console.log(`Fetching more recipes for ${categoryName}`);
+                fetchCategoryRecipes(categoryId, categoryName);
+            }
+        });
+    }
+
+    // Expanding Sidebar Logic
+    if (!isExpanded) {
+        sidebar.classList.add('expanded');  // Expand the sidebar
+    } else {
+        sidebar.classList.remove('expanded');  // Collapse the sidebar
     }
 }
+
+
+// To handle the infinite scrolling when the sidebar is scrolled
+document.querySelector('.sidebar').addEventListener('scroll', function() {
+    const sidebar = document.querySelector('.sidebar');
+    const categoryContainers = sidebar.querySelectorAll('.category-container');
+    const lastCategory = categoryContainers[categoryContainers.length - 1];
+
+    // Check if the sidebar has reached the bottom
+    if (sidebar.scrollTop + sidebar.clientHeight >= sidebar.scrollHeight - 10) {
+        console.log("Reached the bottom of the sidebar, scroll to next category.");
+        scrollToNextCategory();  // Scroll to the next category in the sidebar
+    }
+});
