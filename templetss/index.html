@@ -17,7 +17,8 @@
 <body>
 
     <!-- Menu and Recipe Section Container -->
-    <div class="menu-container">
+     <!-- Menu and Recipe Section Container -->
+     <div class="menu-container">
         <div class="menu">
             <h1>Food Finder</h1>
             
@@ -43,28 +44,30 @@
         </ul>
     </div>
 </div>
-
+    
             </section>
         </div>
     
         <div class="sidebar">
-            <button onclick="toggleCategory('veg-recipes', 'veg')">Veg</button>
-            <ul id="veg-recipes" class="recipe-list"></ul>
-    
-            <button onclick="toggleCategory('non-veg-recipes', 'non-veg')">Non-Veg</button>
-            <ul id="non-veg-recipes" class="recipe-list"></ul>
-    
-            <button onclick="toggleCategory('seafood-recipes', 'sea food')">Sea Food</button>
-            <ul id="seafood-recipes" class="recipe-list"></ul>
-    
-            <button onclick="toggleCategory('street-food-recipes', 'street food')">Street Food</button>
-            <ul id="street-food-recipes" class="recipe-list"></ul>
-    
-            <button onclick="toggleCategory('tiffin-recipes', 'tiffin')">Tiffins</button>
-            <ul id="tiffin-recipes" class="recipe-list"></ul>
+            <h2 class="sidebar-header" onclick="toggleCategories()">Categories</h2>
+            <div id="categories-container">
+                <button onclick="toggleCategory('veg-recipes', 'veg')">Veg</button>
+                <ul id="veg-recipes" class="recipe-list"></ul>
+        
+                <button onclick="toggleCategory('non-veg-recipes', 'non-veg')">Non-Veg</button>
+                <ul id="non-veg-recipes" class="recipe-list"></ul>
+        
+                <button onclick="toggleCategory('seafood-recipes', 'sea food')">Sea Food</button>
+                <ul id="seafood-recipes" class="recipe-list"></ul>
+        
+                <button onclick="toggleCategory('street-food-recipes', 'street food')">Street Food</button>
+                <ul id="street-food-recipes" class="recipe-list"></ul>
+        
+                <button onclick="toggleCategory('tiffin-recipes', 'tiffin')">Tiffins</button>
+                <ul id="tiffin-recipes" class="recipe-list"></ul>
+            </div>
         </div>
         
-
     
         <!-- External JS Script Links -->
         <script src="/frontend/js/api.js"></script>

@@ -31,29 +31,7 @@ document.getElementById("recipe-form").addEventListener("submit", function (even
         .catch(error => console.error('Error:', error));
     }
 
-    // Function to display multiple recipe suggestions
-    function displaySuggestions(suggestions) {
-        const container = document.getElementById("suggestionsContainer");
-        container.innerHTML = '';  // Clear previous suggestions
 
-        if (suggestions && suggestions.length > 0) {
-            suggestions.forEach(suggestion => {
-                const suggestionItem = document.createElement("div");
-                suggestionItem.classList.add("suggestion");
-                suggestionItem.innerHTML = `<p>${suggestion.name}</p>`;
-
-                // When a suggestion is clicked, display recipe details
-                suggestionItem.addEventListener("click", function() {
-                    displayRecipeDetails(suggestion);
-                });
-
-                container.appendChild(suggestionItem);
-            });
-        } else {
-            container.innerHTML = '<p>No suggestions found.</p>';
-        }
-    }
-// Initialize current page for each category and store past recipes
 // Store the page for fetching the recipes based on category
 // Initialize current page for each category and store past recipes
 let currentPages = {};
@@ -74,23 +52,26 @@ function fetchCategoryRecipes(categoryId, categoryName) {
 
                 data.forEach(recipe => {
                     const li = document.createElement('li');
+                    li.classList.add('recipe-item');
+                    li.setAttribute('data-id', recipe.id);
+
                     li.innerHTML = `
-                        <a href="#" class="recipe-link" data-id="${recipe.id}">
-                            <i class="fas fa-utensils"></i> ${recipe.name}
-                        </a>
-                        <div class="recipe-description">
-                            <p><strong>Description:</strong> ${recipe.description}</p>
+                        <div class="recipe-link">
+                            <i class="fas fa-utensils"></i> <span class="recipe-name">${recipe.name}</span>
+                            <div class="recipe-description">
+                                <p><strong>Description:</strong> ${recipe.description}</p>
+                            </div>
                         </div>
                     `;
+
                     categoryList.appendChild(li);
                 });
 
-                // Attach click event to newly added links
-                document.querySelectorAll('.recipe-link').forEach(link => {
-                    link.addEventListener('click', (e) => {
+                // Attach click event to each new recipe item (icon, name, and description)
+                document.querySelectorAll('.recipe-item').forEach(item => {
+                    item.addEventListener('click', (e) => {
                         e.preventDefault();
-                        const target = e.currentTarget;  // Ensure you get the <a> element itself
-                        const recipeId = target.getAttribute('data-id');
+                        const recipeId = item.getAttribute('data-id');
                         showRecipeDetail(recipeId);
                     });
                 });
@@ -128,36 +109,27 @@ function showRecipeDetail(recipeId) {
 
 // Function to display the recipe details in the main section
 function displayRecipeDetails(data) {
-    const recipeDetails = document.getElementById("recipe-details");
+    const recipeDetailsContainer = document.getElementById("recipe-details");
 
-    if (data.error) {
-        recipeDetails.innerHTML = `<p>${data.error}</p>`;
-    } else {
-        const videoEmbed = data.url ? `
-            <h3>Watch the recipe video:</h3>
-            <div class="video-container">
-                <iframe width="560" height="315" 
-                    src="https://www.youtube.com/embed/${extractYouTubeId(data.url)}" 
-                    frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
-                </iframe>
-            </div>
-        ` : '';
+    const videoEmbed = data.url ? `
+        <h3>Watch the recipe video:</h3>
+        <div class="video-container">
+            <iframe width="560" height="315" 
+                src="https://www.youtube.com/embed/${extractYouTubeId(data.url)}" 
+                frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
+            </iframe>
+        </div>` : '';
 
-        recipeDetails.innerHTML = `
-            <h1>${data.name}</h1>
-            <h2>Description:</h2>
-            <p>${data.description}</p>
-            <h2>Ingredients:</h2>
-            <ul>
-                ${data.ingredients.map(ingredient => `<li>${ingredient}</li>`).join('')}
-            </ul>
-            <h2>Steps:</h2>
-            <ol>
-                ${data.steps.map(step => `<li>${step}</li>`).join('')}
-            </ol>
-            ${videoEmbed}
-        `;
-    }
+    recipeDetailsContainer.innerHTML = `
+        <h1>${data.name}</h1>
+        <h2>Description:</h2>
+        <p>${data.description}</p>
+        <h2>Ingredients:</h2>
+        <ul>${data.ingredients.map(ingredient => `<li>${ingredient}</li>`).join('')}</ul>
+        <h2>Steps:</h2>
+        <ol>${data.steps.map(step => `<li>${step}</li>`).join('')}</ol>
+        ${videoEmbed}
+    `;
 }
 
 // Helper function to extract YouTube video ID from URL
@@ -224,3 +196,65 @@ document.querySelector('.sidebar').addEventListener('scroll', function() {
         scrollToNextCategory();  // Scroll to the next category in the sidebar
     }
 });
+function toggleCategories() {
+    const categoriesContainer = document.getElementById('categories-container');
+    if (categoriesContainer.style.display === 'none' || categoriesContainer.style.display === '') {
+        categoriesContainer.style.display = 'block';  // Show categories
+    } else {
+        categoriesContainer.style.display = 'none';  // Hide categories
+    }
+}
+// Event listener for handling search input and showing suggestions
+document.getElementById("recipe-input").addEventListener("input", showSuggestions);
+
+async function showSuggestions() {
+    const input = document.getElementById("recipe-input").value.trim();
+    const suggestionsContainer = document.getElementById("suggestionsContainer");
+
+    if (input.length < 2) {
+        suggestionsContainer.innerHTML = ""; // Clear suggestions if input is too short
+        return;
+    }
+
+    try {
+        const response = await fetch(`/get-recipes?category=${input}`);
+        const suggestions = await response.json();
+
+        if (suggestions.length > 0) {
+            suggestionsContainer.innerHTML = suggestions
+                .map(recipe => `<div class="suggestion-item" data-recipe-id="${recipe.id}">${recipe.name}</div>`)
+                .join("");
+
+            suggestionsContainer.addEventListener("click", function (event) {
+                if (event.target.classList.contains("suggestion-item")) {
+                    const recipeId = event.target.getAttribute("data-recipe-id");
+                    fetchRecipeDetail(recipeId);
+                }
+            });
+
+        } else {
+            suggestionsContainer.innerHTML = "<p>No recipes found.</p>";
+        }
+    } catch (error) {
+        console.error("Error fetching suggestions:", error);
+        suggestionsContainer.innerHTML = "<p>Error fetching suggestions.</p>";
+    }
+}
+
+async function fetchRecipeDetail(recipeId) {
+    const recipeDetailsContainer = document.getElementById("recipe-details");
+
+    try {
+        const response = await fetch(`/get-recipe-detail?id=${encodeURIComponent(recipeId)}`);
+        const recipe = await response.json();
+
+        if (recipe.error) {
+            recipeDetailsContainer.innerHTML = `<p>${recipe.error}</p>`;
+        } else {
+            displayRecipeDetails(recipe);
+        }
+    } catch (error) {
+        console.error("Error fetching recipe details:", error);
+        recipeDetailsContainer.innerHTML = "<p>Error fetching recipe details.</p>";
+    }
+}
