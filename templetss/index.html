@@ -15,7 +15,35 @@
     <link rel="stylesheet" href="/frontend/styles.css">
 </head>
 <body>
-
+    <div class="dropdown">
+        <button class="dropbtn">Menu</button>
+        <div class="dropdown-content">
+          <a href="index.html">Home</a>
+          <a href="admin.html">Admin Panel</a>
+          <a href="edit.html">CRUD Operations</a>
+          
+          <div class="sidebar">
+            <h2 class="sidebar-header" onclick="toggleCategories()">Categories</h2>
+            <div id="categories-container">
+              <button onclick="toggleCategory('veg-recipes', 'veg')">Veg</button>
+              <ul id="veg-recipes" class="recipe-list"></ul>
+          
+              <button onclick="toggleCategory('non-veg-recipes', 'non-veg')">Non-Veg</button>
+              <ul id="non-veg-recipes" class="recipe-list"></ul>
+          
+              <button onclick="toggleCategory('seafood-recipes', 'sea food')">Sea Food</button>
+              <ul id="seafood-recipes" class="recipe-list"></ul>
+          
+              <button onclick="toggleCategory('street-food-recipes', 'street food')">Street Food</button>
+              <ul id="street-food-recipes" class="recipe-list"></ul>
+          
+              <button onclick="toggleCategory('tiffin-recipes', 'tiffin')">Tiffins</button>
+              <ul id="tiffin-recipes" class="recipe-list"></ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      
     <!-- Menu and Recipe Section Container -->
      <!-- Menu and Recipe Section Container -->
      <div class="menu-container">
@@ -23,16 +51,20 @@
             <h1>Food Finder</h1>
             
             <!-- Existing Recipe Search Form Section -->
-            <section class="search-section">
-                <form id="recipe-form" class="search-form">
-                    <label for="recipe-input" class="visually-hidden">Search for a recipe or keyword</label>
-                    <input type="text" id="recipe-input" placeholder="Enter a recipe name or keyword" required aria-label="Search for a recipe or keyword" oninput="showSuggestions()">
-                    <button type="submit" aria-label="Search for recipes">Search</button>
-                </form>
-    
-                <!-- Suggestions will be displayed here -->
-                <div id="suggestionsContainer"></div>
-                
+           <!-- Recipe Search Section -->
+<section class="search-section">
+    <div class="search-container">
+        <form id="recipe-form" class="search-form">
+            <label for="recipe-input" class="visually-hidden">Search for a recipe or keyword</label>
+            <input type="text" id="recipe-input" placeholder="Enter a recipe name or keyword" required aria-label="Search for a recipe or keyword">
+            <button type="submit" aria-label="Search for recipes">Search</button>
+        </form>
+
+        <!-- Combined Suggestions Container -->
+        <div id="suggestionsContainer"></div>
+    </div>
+</section>
+
                 <!-- Display Recipe Details Here -->
                 <!-- Display Recipe Details Here -->
 <div id="recipe-details" class="recipe-details">
@@ -48,26 +80,7 @@
             </section>
         </div>
     
-        <div class="sidebar">
-            <h2 class="sidebar-header" onclick="toggleCategories()">Categories</h2>
-            <div id="categories-container">
-                <button onclick="toggleCategory('veg-recipes', 'veg')">Veg</button>
-                <ul id="veg-recipes" class="recipe-list"></ul>
-        
-                <button onclick="toggleCategory('non-veg-recipes', 'non-veg')">Non-Veg</button>
-                <ul id="non-veg-recipes" class="recipe-list"></ul>
-        
-                <button onclick="toggleCategory('seafood-recipes', 'sea food')">Sea Food</button>
-                <ul id="seafood-recipes" class="recipe-list"></ul>
-        
-                <button onclick="toggleCategory('street-food-recipes', 'street food')">Street Food</button>
-                <ul id="street-food-recipes" class="recipe-list"></ul>
-        
-                <button onclick="toggleCategory('tiffin-recipes', 'tiffin')">Tiffins</button>
-                <ul id="tiffin-recipes" class="recipe-list"></ul>
-            </div>
-        </div>
-        
+    
     
         <!-- External JS Script Links -->
         <script src="/frontend/js/api.js"></script>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ recipe.name }} - Recipe Detail</title>
+    <!-- You can include CSS here for styling -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Recipe Details</h1>
+    </header>
+
+    <main>
+        <div class="recipe-detail">
+            <h2>{{ recipe.name }}</h2>  <!-- Displays the recipe name -->
+            <p>{{ recipe.description }}</p>  <!-- Displays the recipe description -->
+
+            <h3>Ingredients:</h3>
+            <ul>
+                {% for ingredient in recipe.ingredients %}
+                    {% if ingredient %}
+                        <li>{{ ingredient }}</li>  <!-- Display each ingredient -->
+                    {% endif %}
+                {% endfor %}
+            </ul>
+
+            <h3>Steps:</h3>
+            <ol>  <!-- Ordered list for steps -->
+                {% for step in recipe.steps %}
+                    {% if step %}
+                        <li>{{ step }}</li>  <!-- Display each step -->
+                    {% endif %}
+                {% endfor %}
+            </ol>
+
+            <a href="{{ recipe.url }}" target="_blank">View Full Recipe</a>  <!-- Provides a link to view the full recipe -->
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Recipe Finder</p>
+    </footer>
+</body>
+</html>

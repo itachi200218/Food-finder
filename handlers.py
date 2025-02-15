@@ -1,130 +1,126 @@
+import json
 from rapidfuzz import process as rapid_process
-from models import Recipe, Category  # Import Recipe and Category models
-from extensions import db  # Import db from extensions.py
+from sqlalchemy import func, and_, or_
+from models import Recipe, Category
+from extensions import db
+from redis import Redis
 import logging
 
-# Set up the logger
+# Set up logger
 logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
+
+# Redis client setup
+redis_client = Redis(host='localhost', port=6379, decode_responses=True)
 
 def handle_recipe_search(user_input, category_name=None):
+    """Handles a basic recipe search with caching, exact match, and fuzzy matching."""
     try:
-        # Clean the user input
         user_input = user_input.lower().strip()
-        keywords = [kw.strip() for kw in user_input.split(" ") if kw]  # Split into keywords
-
-        # Log the received input and keywords
+        keywords = [kw.strip() for kw in user_input.split() if kw]
         logger.info(f"Received user input: '{user_input}', Keywords: {keywords}, Category: {category_name}")
 
-        # Initialize the response
-        response = {}
+        cache_key = f"recipe_search:{user_input}:{category_name}"
+        cached_result = redis_client.get(cache_key)
+        if cached_result:
+            logger.info("Returning cached result.")
+            return json.loads(cached_result)
 
-        # Build the base query to fetch recipes with a join to categories
         query = db.session.query(Recipe).join(Category, Recipe.category_id == Category.id)
-
         if category_name:
-            # Filter by category dynamically using the category_name
             query = query.filter(Category.name.ilike(f"%{category_name}%"))
 
-        # Exact Match: Check if all keywords are in name, ingredients, or steps
+        # Exact Match
         matched_recipe = query.filter(
-            db.and_(
-                *[db.or_(
+            and_(*[
+                or_(
                     Recipe.name.ilike(f"%{kw}%"),
                     Recipe.ingredients.ilike(f"%{kw}%"),
-                    Recipe.steps.ilike(f"%{kw}%")  # Include steps in the exact match
-                ) for kw in keywords]
-            )
+                    Recipe.steps.ilike(f"%{kw}%")
+                ) for kw in keywords
+            ])
         ).first()
 
         if matched_recipe:
-            # Return recipe details for an exact match
-            response = {
-                "name": matched_recipe.name,
-                "ingredients": matched_recipe.ingredients.split(", "),
-                "description": matched_recipe.description,
-                "steps": matched_recipe.steps.split(" | "),
-                "url": matched_recipe.url,
-                "category": matched_recipe.category.name,  # Include category in the response
-                "suggestions": []
-            }
+            response = format_recipe_response(matched_recipe)
             logger.info(f"Exact match found: {matched_recipe.name}")
+            redis_client.set(cache_key, json.dumps(response), ex=3600)  # Cache for 1 hour
             return response
 
-        # Fuzzy matching if no exact match is found
-        recipes = query.all()
-        recipe_data = [{"name": r.name, "ingredients": r.ingredients, "steps": r.steps} for r in recipes]
+        # Fuzzy Matching
+        recipes = query.limit(100).all()  # Limit to 100 for performance
+        recipe_names = [r.name for r in recipes]
 
-        # Prepare lists for fuzzy matching (including steps)
-        recipe_names = [r["name"] for r in recipe_data]
-        recipe_ingredients = [r["ingredients"] for r in recipe_data]
-        recipe_steps = [r["steps"] for r in recipe_data]  # Add steps to fuzzy matching
+        fuzzy_matches = rapid_process.extract(user_input, recipe_names, limit=5, score_cutoff=70)
+        suggestions = [
+            format_recipe_response(next(r for r in recipes if r.name == match[0]))
+            for match in fuzzy_matches
+        ]
 
-        logger.debug(f"Available recipe names: {recipe_names}")
-        logger.debug(f"Available recipe ingredients: {recipe_ingredients}")
-        logger.debug(f"Available recipe steps: {recipe_steps}")
-
-        # Fuzzy matching for each keyword (include steps now)
-        fuzzy_matches = []
-        for kw in keywords:
-            matched_name = rapid_process.extract(kw, recipe_names, limit=3, score_cutoff=70)
-            matched_ingredient = rapid_process.extract(kw, recipe_ingredients, limit=3, score_cutoff=70)
-            matched_steps = rapid_process.extract(kw, recipe_steps, limit=3, score_cutoff=70)  # Fuzzy matching for steps
-            for match in matched_name:
-                if not any(m["value"] == match[0] for m in fuzzy_matches):  # Avoid duplicates
-                    fuzzy_matches.append({"type": "name", "value": match[0], "score": match[1]})
-            for match in matched_ingredient:
-                if not any(m["value"] == match[0] for m in fuzzy_matches):  # Avoid duplicates
-                    fuzzy_matches.append({"type": "ingredient", "value": match[0], "score": match[1]})
-            for match in matched_steps:
-                if not any(m["value"] == match[0] for m in fuzzy_matches):  # Avoid duplicates
-                    fuzzy_matches.append({"type": "steps", "value": match[0], "score": match[1]})
-
-        # Aggregate matches by recipe, considering match type weights (name, ingredients, steps)
-        match_weights = {"name": 3, "ingredient": 2, "steps": 1}
-        match_scores = {}
-        for match in fuzzy_matches:
-            if match["value"] in match_scores:
-                match_scores[match["value"]] += match["score"] * match_weights.get(match["type"], 1)
-            else:
-                match_scores[match["value"]] = match["score"] * match_weights.get(match["type"], 1)
-
-        # Select up to 3 best matches
-        best_matches = sorted(match_scores.items(), key=lambda x: x[1], reverse=True)[:3]
-
-        # Fetch the recipes based on the best matches
-        matched_values = [match[0] for match in best_matches]
-        suggestions = query.filter(
-            Recipe.name.in_(matched_values) |
-            Recipe.ingredients.in_(matched_values) |
-            Recipe.steps.in_(matched_values)
-        ).all()
-
-        # Prepare the response
-        suggestions_list = []
-        for matched_recipe in suggestions:
-            suggestions_list.append({
-                "name": matched_recipe.name,
-                "ingredients": matched_recipe.ingredients.split(", "),
-                "description": matched_recipe.description,
-                "url": matched_recipe.url,
-                "steps": matched_recipe.steps.split(" | "),  # Split the steps for easier display
-                "matched_keywords": [kw for kw in keywords if kw in matched_recipe.name.lower() or kw in matched_recipe.ingredients.lower() or kw in matched_recipe.steps.lower()]
-            })
-
-        if suggestions_list:
-            response = {"suggestions": suggestions_list}
-            logger.info(f"Suggestions found: {[s['name'] for s in suggestions_list]}")
-        else:
-            response = {"error": "No matching recipe found.", "suggestions": []}
-            logger.info("No fuzzy match found for user input.")
-
-        logger.info(f"Response: {response}")
+        response = {"suggestions": suggestions or [{"error": "No matching recipe found."}]}
+        redis_client.set(cache_key, json.dumps(response), ex=3600)  # Cache for 1 hour
         return response
 
     except Exception as e:
-        # Log any errors
-        logger.error(f"Error processing recipe search for input '{user_input}': {e}")
-        return {"error": "An unexpected error occurred while processing the request.", "suggestions": []}
+        logger.error(f"Error processing recipe search: {e}")
+        return {"error": "An unexpected error occurred."}
+
+def handle_advanced_recipe_search(user_input, category_name=None, limit=5):
+    """Handles an advanced recipe search using full-text search with caching and fuzzy matching fallback."""
+    try:
+        user_input = user_input.lower().strip()
+        cache_key = f"advanced_search:{user_input}:{category_name}"
+        cached_result = redis_client.get(cache_key)
+        if cached_result:
+            logger.info("Returning cached result.")
+            return json.loads(cached_result)
+
+        query = db.session.query(Recipe).join(Category, Recipe.category_id == Category.id)
+        if category_name:
+            query = query.filter(Category.name.ilike(f"%{category_name}%"))
+
+        # Full-text search for exact matches (MySQL FULLTEXT)
+        matched_recipes = query.filter(
+            func.match(Recipe.name, Recipe.ingredients, Recipe.steps).against(user_input)
+        ).limit(limit).all()
+
+        if matched_recipes:
+            response = {"recipes": [format_recipe_response(recipe) for recipe in matched_recipes]}
+            redis_client.set(cache_key, json.dumps(response), ex=3600)  # Cache for 1 hour
+            return response
+
+        # Fuzzy Matching as a fallback
+        recipes = query.limit(100).all()
+        recipe_names = [r.name for r in recipes]
+
+        fuzzy_matches = rapid_process.extract(user_input, recipe_names, limit=5, score_cutoff=70)
+        suggestions = [
+            format_recipe_response(next(r for r in recipes if r.name == match[0]))
+            for match in fuzzy_matches
+        ]
+
+        response = {"suggestions": suggestions or [{"error": "No matching recipe found."}]}
+        redis_client.set(cache_key, json.dumps(response), ex=3600)  # Cache for 1 hour
+        return response
+
+    except Exception as e:
+        logger.error(f"Error processing advanced recipe search: {e}")
+        return {"error": "An unexpected error occurred."}
+
+def format_recipe_response(recipe):
+    """Helper function to format a recipe response into a dictionary."""
+    return {
+        "name": recipe.name,
+        "ingredients": recipe.ingredients.split(", "),
+        "description": recipe.description,
+        "steps": recipe.steps.split(" | "),
+        "url": recipe.url,
+        "category": recipe.category.name
+    }
+
+
+
+
 
 
 

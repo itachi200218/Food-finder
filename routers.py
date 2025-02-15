@@ -1,5 +1,5 @@
-from flask import render_template, request, jsonify
-from handlers import handle_recipe_search
+from flask import Flask, render_template, request, jsonify
+from handlers import handle_recipe_search, handle_advanced_recipe_search  # Import your handler functions
 from models import db, Recipe, Category
 from sqlalchemy import or_
 import logging
@@ -7,18 +7,18 @@ import logging
 # Set up logging for error handling
 logging.basicConfig(level=logging.ERROR)
 
-CHUNK_SIZE = 5  # Constant for recipes per page
+CHUNK_SIZE = 5  # Number of recipes per page for pagination
 
 def setup_routes(app):
-
     @app.route("/", methods=["GET", "POST"])
     def index():
         """Render the main page or handle search requests."""
         if request.method == "POST":
             try:
                 data = request.get_json()
-                user_input = data.get("prompt", "recipeName").lower().strip()
-                response = handle_recipe_search(user_input)
+                user_input = data.get("prompt", "").lower().strip()
+                category = data.get("category", None)
+                response = handle_recipe_search(user_input, category)
                 return jsonify(response)
             except Exception as e:
                 logging.error(f"Error in index route: {e}")
@@ -29,10 +29,9 @@ def setup_routes(app):
     def get_recipes():
         """Fetch a list of recipes with optional filtering by category or keyword."""
         try:
-            category = request.args.get('category')  # Example: 'chicken'
+            category = request.args.get('category', '').strip()
             page = max(int(request.args.get('page', 1)), 1)
             
-            # Base query to fetch recipes with optional keyword filtering
             query = db.session.query(Recipe).join(Category, Recipe.category_id == Category.id).distinct(Recipe.name)
 
             if category:
@@ -67,11 +66,10 @@ def setup_routes(app):
     def get_recipe_detail():
         """Fetch detailed information about a specific recipe by ID or name."""
         try:
-            recipe_id = request.args.get('id')
+            recipe_id = request.args.get('id', '').strip()
             if not recipe_id:
                 return jsonify({'error': 'No recipe ID provided'}), 400
 
-            # Check if the provided ID is a digit (search by ID) or a string (search by name)
             recipe = None
             if recipe_id.isdigit():
                 recipe = db.session.query(Recipe).filter_by(id=int(recipe_id)).first()

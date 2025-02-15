@@ -1,10 +1,10 @@
 :root {
-    --primary-bg: linear-gradient(45deg, #000, #333, #666);
-    --menu-bg: linear-gradient(135deg, #312a2a, #f8f6f6);
+    --primary-bg: linear-gradient(45deg, #000, #000000, #130c0c);
+    --menu-bg: rgba(20, 20, 20, 0.9);
     --button-bg: rgba(0, 0, 0, 0.8);
     --button-hover-bg: rgba(76, 175, 80, 0.8);
     --text-color: #ddd;
-    --highlight-color: #4CAF50;
+    --highlight-color: #fff;
     --dark-bg: #1a1a1a;
     --dark-text: #f0f0f0;
 }
@@ -18,7 +18,7 @@
 body {
     display: flex;
     flex-direction: row;
-    background: var(--primary-bg);
+    background: linear-gradient(135deg, #1c293d, #09152a);
     font-family: 'Poppins', sans-serif;
     color: var(--text-color);
     min-height: 100vh;
@@ -355,87 +355,11 @@ body.dark-mode #recipe-input {
 }
 
 
-
-/* Recipe Details */
-#recipe-details {
-    width: 90%;  /* Increased width for a more expansive look */
-    max-width: 800px;  /* Wider max-width */
-    padding: 20px;  /* Reduced padding to lower height */
-    background: rgba(30, 30, 30, 0.9); /* Fixed background transparency */
-    border-radius: 20px;
-    box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.7), -10px -10px 20px rgba(50, 50, 50, 0.4);
-    margin-top: 30px;
-    transition: all 0.6s ease;
-    animation: fadeIn 1.2s ease forwards;
-}
-
-#recipe-details:hover {
-    background: rgba(40, 40, 40, 0.9);
-    box-shadow: 15px 15px 30px rgba(0, 255, 0, 0.4), -15px -15px 30px rgba(0, 255, 0, 0.2);
-    transform: scale(1.05); /* Subtle hover effect */
-}
-
-
 @keyframes fadeIn {
     0% { opacity: 0; transform: translateY(30px); }
     100% { opacity: 1; transform: translateY(0); }
 }
 
-
-#recipe-details p {
-    color: #dcdcdc; /* Light gray for text */
-    margin-bottom: 10px;
-}
-#recipe-details ul {
-    list-style: none;
-    padding: 0;
-}
-
-#recipe-details ul li {
-    position: relative;
-    padding: 10px 20px;
-    font-size: 1.2rem;
-    color: #fff;
-    margin-bottom: 10px;
-    transition: color 0.3s ease;
-}
-
-#recipe-details ul li::before {
-    content: '';
-    position: absolute;
-    left: -100%;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.1);
-    transition: left 0.3s ease;
-}
-    
-    #recipe-details ul li::before {
-        content: '';
-        position: absolute;
-        left: -100%;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.1);  /* Light overlay effect */
-        transition: left 0.3s ease;  /* Smooth transition */
-    }
-    
-    #recipe-details ul li:hover::before {
-        left: 0;  /* Slide effect on hover */
-    }
-    
-#recipe-details ul li:hover {
-    color: #00ff00; /* Changes text color on hover */
-    font-weight: bold;
-}
-
-
-#recipe-details ul li span {
-    position: relative;
-    z-index: 1;
-}
 
 /* Responsive Design */
 @media (max-width: 768px) {
@@ -457,15 +381,7 @@ body.dark-mode #recipe-input {
         max-width: 100%;
         padding: 20px;
     }
-    @media (min-width: 769px) {
-    #recipe-details h2 {
-        font-size: 2.2rem;
-    }
-
-    #recipe-details h3 {
-        font-size: 1.8rem;
-    }
-}
+   
     /* Recipe Details Heading Styles */
 #recipe-details h2 {
     font-size: 2rem;  /* Large and bold for section headings */
@@ -479,33 +395,6 @@ body.dark-mode #recipe-input {
 }
 
 /* Subheadings (for Ingredients, Steps, etc.) */
-#recipe-details h3 {
-    font-size: 1.6rem;
-    color: #ffcc00;  /* Yellowish-gold for a distinct style */
-    margin-bottom: 15px;
-    letter-spacing: 1px;
-    border-left: 4px solid #00ff00;  /* Stylish left border */
-    padding-left: 10px;
-    animation: fadeIn 1.2s ease forwards;
-}
-
-/* Add subtle hover animation to headings */
-#recipe-details h2:hover,
-#recipe-details h3:hover {
-    color: #ffffff;
-    transform: scale(1.05);
-    transition: all 0.3s ease;
-}
-/* Optimized for Laptops and Larger Screens */
-@media (min-width: 769px) {
-    #recipe-details h2 {
-        font-size: 2.2rem;
-    }
-
-    #recipe-details h3 {
-        font-size: 1.8rem;
-    }
-}
 
 }
 
@@ -670,12 +559,6 @@ a:hover {
     
 }
 
-    /* Main Content */
-   
-    /* Recipe Form */
-    
-  
-    /* Recipe Details */
    
     /* Adjust layout for video container and additional recipe content */
     .video-container {
@@ -694,20 +577,8 @@ a:hover {
         height: 100%;
     }
 
-  
-    
-/* Apply cursor pointer to suggestions */
-/* Apply cursor pointer to recipe details (if there's clickable content) */
 
-/* Suggestions container */
-#suggestionsContainer {
-    cursor: pointer; /* Hand cursor on hover */
-    padding: 10px; /* Adds padding for better spacing */
-    border-radius: 8px; /* Rounded corners */
-    background: rgb(30, 29, 29); /* Default background color */
-    color: white; /* Text color */
-    transition: background 0.3s ease; /* Smooth background transition */
-}
+
 
 /* Recipe Item Styling */
 .recipe-description, .recipe-ingredients, .recipe-steps, .recipe-more-info {
@@ -734,8 +605,96 @@ a:hover {
     border-radius: 5px;
 }
 
+/* Parent container for search and suggestions */
+.search-container {
+    position: relative;
+    width: 150%;
+    max-width: 700px;
+    background: linear-gradient(255, 255, 255, 0.1);
+    padding: 10px;
+    border-radius: 20px; /* Increased for a more rounded look */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Slightly deeper shadow for soft effect */
+    border: 1px solid linear-gradient(255, 255, 255, 0.2); /* Optional: Add a soft border */
+}
 
+/* Individual suggestion items */
+.suggestion-item {
+    padding: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    transition: background 0.4s ease, transform 0.2s ease, box-shadow 0.3s ease;
+    background: sem(16, 22, 32, 0.6);
+    color: var(--text-color);
+    cursor: pointer;
+}
 
-
-
-
+.suggestion-item:hover {
+    background: linear-gradient(135deg, rgba(0, 123, 255, 0.8), rgba(32, 32, 32, 0.8));
+    box-shadow: 0 0 15px rgba(0, 123, 255, 0.8);
+    transform: scale(1.05);
+    color: var(--highlight-color);
+}
+.dropdown {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+  }
+  
+  .dropbtn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 12px 20px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background-color 0.3s, box-shadow 0.3s;
+  }
+  
+  .dropbtn:hover {
+    background-color: #45a049;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    background-color: #fff;
+    min-width: 200px;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.15);
+    z-index: 1;
+    border-radius: 8px;
+    overflow: hidden;
+    animation: fadeIn 0.3s ease;
+  }
+  
+  .dropdown-content a {
+    color: #333;
+    padding: 12px 20px;
+    text-decoration: none;
+    display: block;
+    font-size: 15px;
+    transition: background-color 0.3s, color 0.3s;
+  }
+  
+  .dropdown-content a:hover {
+    background-color: #f1f1f1;
+    color: #4CAF50;
+  }
+  
+  .dropdown:hover .dropdown-content {
+    display: block;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  

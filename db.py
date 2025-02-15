@@ -59,4 +59,3 @@ def execute_query(query, params=None):
 
 if __name__ == "__main__":
     app.run(debug=True)
-
