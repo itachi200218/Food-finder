@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>🍽️ Food Finder - ChatBot</title>
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+    <style>
+        /* === Base === */
+        body {
+          font-family: 'Poppins', sans-serif;
+          background: linear-gradient(135deg, #f6f9ff, #e0ebff);
+          margin: 0;
+          color: #333;
+        }
+
+        header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          background: linear-gradient(90deg, #007bff, #00bfff);
+          color: white;
+          padding: 15px 25px;
+          box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        header h1 {
+          font-size: 26px;
+          font-weight: 700;
+          margin: 0;
+        }
+
+        .nav-buttons button {
+          background: rgba(255, 255, 255, 0.9);
+          color: #007bff;
+          border: none;
+          padding: 8px 14px;
+          border-radius: 8px;
+          margin-left: 8px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: 0.3s;
+        }
+
+        .nav-buttons button:hover {
+          background: #007bff;
+          color: white;
+          transform: scale(1.05);
+        }
+
+        /* === Layout === */
+        .container {
+          display: flex;
+          gap: 25px;
+          padding: 30px;
+        }
+
+        aside {
+          width: 240px;
+          background: white;
+          border-radius: 12px;
+          padding: 20px;
+          box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        aside h3 {
+          color: #007bff;
+          margin-bottom: 15px;
+          font-weight: 600;
+        }
+
+        aside li {
+          list-style: none;
+          padding: 10px 14px;
+          margin-bottom: 10px;
+          border-radius: 8px;
+          background: #f7f9fc;
+          cursor: pointer;
+          transition: 0.3s;
+        }
+
+        aside li:hover, aside li.active {
+          background: #007bff;
+          color: white;
+          transform: translateX(5px);
+        }
+
+        /* === Chatbot === */
+        .chat-container {
+          flex: 1;
+          background: white;
+          border-radius: 16px;
+          box-shadow: 0px 4px 25px rgba(0, 0, 0, 0.1);
+          padding: 25px;
+          display: flex;
+          flex-direction: column;
+        }
+
+        .chat-container h2 {
+          margin-bottom: 15px;
+          color: #007bff;
+          font-weight: 600;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+
+        .chat-container h2::before {
+          content: "🤖";
+        }
+
+        .chat-box {
+          flex: 1;
+          background: #f8faff;
+          border-radius: 12px;
+          padding: 20px;
+          overflow-y: auto;
+          margin-bottom: 15px;
+          scroll-behavior: smooth;
+        }
+
+        .message {
+          max-width: 80%;
+          padding: 12px 16px;
+          border-radius: 18px;
+          margin-bottom: 12px;
+          line-height: 1.5;
+          font-size: 15px;
+          animation: fadeIn 0.3s ease;
+        }
+
+        .user {
+          background: linear-gradient(135deg, #007bff, #00bfff);
+          color: white;
+          margin-left: auto;
+          border-bottom-right-radius: 4px;
+        }
+
+        .bot {
+          background: #e6ebf5;
+          color: #333;
+          margin-right: auto;
+          border-bottom-left-radius: 4px;
+        }
+
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(5px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+
+        .chat-input {
+          display: flex;
+          gap: 10px;
+          border-top: 1px solid #ddd;
+          padding-top: 10px;
+        }
+
+        .chat-input input {
+          flex: 1;
+          border: 1px solid #ccc;
+          border-radius: 25px;
+          padding: 12px 18px;
+          font-size: 15px;
+          outline: none;
+          transition: 0.3s;
+        }
+
+        .chat-input input:focus {
+          border-color: #007bff;
+          box-shadow: 0px 0px 5px rgba(0, 123, 255, 0.2);
+        }
+
+        .chat-input button {
+          background: linear-gradient(135deg, #007bff, #00bfff);
+          border: none;
+          color: white;
+          padding: 10px 20px;
+          border-radius: 25px;
+          cursor: pointer;
+          transition: 0.3s;
+          font-weight: 600;
+        }
+
+        .chat-input button:hover {
+          transform: scale(1.05);
+        }
+
+        footer {
+          text-align: center;
+          padding: 15px;
+          font-size: 14px;
+          color: #555;
+          background: #f5f7fa;
+          border-top: 1px solid #ddd;
+          margin-top: 20px;
+        }
+
+        /* Typing animation */
+        .typing {
+          display: inline-block;
+          width: 10px;
+          height: 10px;
+          border-radius: 50%;
+          background: #007bff;
+          margin: 0 2px;
+          animation: blink 1.2s infinite alternate;
+        }
+
+        .typing:nth-child(2) { animation-delay: 0.2s; }
+        .typing:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes blink {
+          from { opacity: 0.2; transform: translateY(0); }
+          to { opacity: 1; transform: translateY(-3px); }
+        }
+
+
+    </style>
+</head>
+
+<body>
+<header>
+    <h1>🍳 Food Finder</h1>
+    <div class="nav-buttons">
+        <button onclick="window.location.href='{{ url_for('index') }}'">Home</button>
+        <button onclick="window.location.href='/chatbot'">ChatBot</button>
+        <button onclick="window.location.href='/recipes'">Recipes</button>
+    </div>
+</header>
+
+<div class="container">
+    <aside>
+        <h3>🍴 Categories</h3>
+        <ul>
+            <li onclick="setActiveCategory(this); filterCategory('Veg')">Veg</li>
+            <li onclick="setActiveCategory(this); filterCategory('Non-Veg')">Non-Veg</li>
+            <li onclick="setActiveCategory(this); filterCategory('Seafood')">Seafood</li>
+            <li onclick="setActiveCategory(this); filterCategory('Street Food')">Street Food</li>
+            <li onclick="setActiveCategory(this); filterCategory('Tiffins')">Tiffins</li>
+        </ul>
+    </aside>
+
+    <div class="chat-container">
+        <h2>Ask the Food Finder AI</h2>
+        <div class="chat-box" id="chat-box"></div>
+
+        <div class="chat-input">
+            <input type="text" id="user-input" placeholder="Type a dish or ingredient..." />
+            <button id="send-btn"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+</div>
+
+<footer>© 2025 Cognizant | Designed by Adepu Chaitanya</footer>
+
+<script>
+    const chatBox = document.getElementById('chat-box');
+    const userInput = document.getElementById('user-input');
+    const sendBtn = document.getElementById('send-btn');
+
+    function addMessage(text, sender, isHtml = false) {
+      const msg = document.createElement('div');
+      msg.classList.add('message', sender);
+      msg.innerHTML = isHtml ? text : text.replace(/\n/g, '<br>');
+      chatBox.appendChild(msg);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function showTyping() {
+      const typing = document.createElement('div');
+      typing.classList.add('message', 'bot');
+      typing.innerHTML = '<span class="typing"></span><span class="typing"></span><span class="typing"></span>';
+      typing.id = 'typing';
+      chatBox.appendChild(typing);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function removeTyping() {
+      const typing = document.getElementById('typing');
+      if (typing) typing.remove();
+    }
+
+    function formatRecipe(data) {
+      if (!data.recipe_name) return null;
+
+      return `
+        <div class="recipe-card">
+          <div class="recipe-title">${data.recipe_name}</div>
+
+          <div class="recipe-section">
+            <h4>🕒 Time</h4>
+            <p>${data.prep_time || 'N/A'}</p>
+          </div>
+
+          <div class="recipe-section">
+            <h4>📋 Description</h4>
+            <p>${data.description}</p>
+          </div>
+
+          <div class="recipe-section">
+            <h4>🥣 Ingredients</h4>
+            <ul>${data.ingredients.map(i => `<li>${i}</li>`).join('')}</ul>
+          </div>
+
+          <div class="recipe-section">
+            <h4>👩‍🍳 Steps</h4>
+            <ol>${data.steps.map(s => `<li>${s}</li>`).join('')}</ol>
+          </div>
+        </div>
+      `;
+    }
+
+    async function sendMessage(promptText) {
+      const text = promptText || userInput.value.trim();
+      if (!text) return;
+
+      addMessage(text, 'user');
+      userInput.value = '';
+      sendBtn.disabled = true;
+      showTyping();
+
+      try {
+        const response = await fetch('/chatbot-api', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt: text })
+        });
+        const data = await response.json();
+        removeTyping();
+
+        const formatted = formatRecipe(data);
+        if (formatted) addMessage(formatted, 'bot', true);
+        else addMessage(data.reply || "Sorry, I couldn’t find anything.", 'bot');
+      } catch (error) {
+        removeTyping();
+        addMessage("⚠️ Connection error. Please try again.", 'bot');
+      }
+
+      sendBtn.disabled = false;
+    }
+
+    sendBtn.addEventListener('click', () => sendMessage());
+    userInput.addEventListener('keydown', e => { if (e.key === 'Enter') sendMessage(); });
+
+    // Sidebar Category Logic
+    async function filterCategory(category) {
+      addMessage(`🔎 Searching best ${category} recipes...`, 'user');
+      showTyping();
+
+      try {
+        const response = await fetch('/chatbot-api', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt: `Show me ${category} recipes` })
+        });
+        const data = await response.json();
+        removeTyping();
+
+        const formatted = formatRecipe(data);
+        if (formatted) addMessage(formatted, 'bot', true);
+        else addMessage(data.reply || "Sorry, I couldn’t find any recipes.", 'bot');
+      } catch (error) {
+        removeTyping();
+        addMessage("⚠️ Connection error. Please try again.", 'bot');
+      }
+    }
+
+    // Highlight active category
+    function setActiveCategory(element) {
+      document.querySelectorAll("aside li").forEach(li => li.classList.remove("active"));
+      element.classList.add("active");
+    }
+</script>
+</body>
+</html>

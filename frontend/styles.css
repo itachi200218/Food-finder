@@ -1,0 +1,700 @@
+:root {
+    --primary-bg: linear-gradient(45deg, #000, #000000, #130c0c);
+    --menu-bg: rgba(20, 20, 20, 0.9);
+    --button-bg: rgba(0, 0, 0, 0.8);
+    --button-hover-bg: rgba(76, 175, 80, 0.8);
+    --text-color: #ddd;
+    --highlight-color: #fff;
+    --dark-bg: #1a1a1a;
+    --dark-text: #f0f0f0;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    display: flex;
+    flex-direction: row;
+    background: linear-gradient(135deg, #1c293d, #09152a);
+    font-family: 'Poppins', sans-serif;
+    color: var(--text-color);
+    min-height: 100vh;
+    overflow-y: auto;
+    transition: background 0.5s ease, color 0.5s ease;
+}
+
+h1 {
+    color: white;
+    font-size: 3rem;
+    text-shadow: 3px 3px 15px rgba(0, 0, 0, 0.7);
+    margin-bottom: 20px;
+    text-align: center;
+    width: 100%;
+}
+
+.menu-container {
+    display: flex;
+    flex: 1;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 20px;
+    gap: 20px;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.menu {
+    flex: 7;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    background: var(--menu-bg);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    overflow-y: auto;
+    transition: background 0.3s ease;
+}
+
+.menu:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.menu-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.menu-container::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+}
+
+.menu-container::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+#recipe-form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 700px;
+    padding: 15px 30px;
+    background: rgba(30, 30, 30, 0.7);
+    border-radius: 30px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.6);
+    margin-bottom: 40px;
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeInMove 1.8s ease forwards;
+}
+
+#recipe-input {
+    padding: 15px 20px;
+    width: 70%;
+    border: none;
+    border-radius: 30px;
+    outline: none;
+    font-size: 1.2rem;
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+    transition: all 0.3s ease;
+}
+
+#recipe-input:focus {
+    background-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    transform: scale(1.05);
+}
+
+@keyframes fadeInMove {
+    0% {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+button {
+    padding: 20px 30px;
+    background: var(--button-bg);
+    color: var(--highlight-color);
+    border: 1px solid rgba(76, 175, 80, 0.6);
+    border-radius: 15px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    letter-spacing: 1px;
+    transition: all 0.4s ease;
+    display: inline-block;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    
+    position: relative;
+}
+
+button:hover {
+    box-shadow: 0 0 20px var(--button-hover-bg), 0 0 40px var(--button-hover-bg);
+    transform: translateY(-5px);
+    color: #fff;
+}
+
+button:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
+}
+
+/* Media Queries for Responsiveness */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 2.5rem;
+    }
+
+    #recipe-input {
+        width: 100%;
+    }
+
+    button {
+        width: 100%;
+        font-size: 1rem;
+    }
+
+    .menu-container {
+        flex-direction: column;
+        height: auto;
+    }
+
+    .menu {
+        flex: 1;
+        height: auto;
+    }
+}
+
+.sidebar-header {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #4CAF50;
+    text-align: center;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.8);
+    border: 1px solid rgba(76, 175, 80, 0.6);
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    margin-bottom: 20px;
+    transition: all 0.4s ease;
+}
+
+/* Recipe Details */
+#recipe-details {
+    width: 90%;
+    max-width: 800px;
+    padding: 20px;
+    background: rgba(30, 30, 30, 0.9);
+    border-radius: 20px;
+    box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.7), -10px -10px 20px rgba(50, 50, 50, 0.4);
+    margin-top: 30px;
+    transition: all 0.6s ease;
+    animation: fadeIn 1.2s ease forwards;
+}
+
+#recipe-details:hover {
+    background: rgba(40, 40, 40, 0.9);
+    box-shadow: 15px 15px 30px rgba(0, 255, 0, 0.4), -15px -15px 30px rgba(0, 255, 0, 0.2);
+    transform: scale(1.05);
+}
+
+@keyframes fadeIn {
+    0% { opacity: 0; transform: translateY(30px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+#recipe-details p {
+    color: #dcdcdc;
+    margin-bottom: 10px;
+}
+
+#recipe-details ul {
+    list-style: none;
+    padding: 0;
+}
+
+#recipe-details ul li {
+    position: relative;
+    padding: 10px 20px;
+    font-size: 1.2rem;
+    color: #fff;
+    margin-bottom: 10px;
+    transition: color 0.3s ease;
+}
+
+#recipe-details ul li::before {
+    content: '';
+    position: absolute;
+    left: -100%;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.1);
+    transition: left 0.3s ease;
+}
+
+#recipe-details ul li:hover::before {
+    left: 0;
+}
+
+#recipe-details ul li:hover {
+    color: #00ff00;
+    font-weight: bold;
+}
+
+#recipe-details ul li span {
+    position: relative;
+    z-index: 1;
+}
+
+/* Recipe Details Heading Styles */
+#recipe-details h2 {
+    font-size: 2rem;
+    color: #00ff00;
+    text-transform: uppercase;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+    padding-bottom: 5px;
+    margin-bottom: 20px;
+    letter-spacing: 1.5px;
+    animation: fadeIn 1.2s ease forwards;
+}
+
+#recipe-details h3 {
+    font-size: 1.6rem;
+    color: #ffcc00;
+    margin-bottom: 15px;
+    letter-spacing: 1px;
+    border-left: 4px solid #00ff00;
+    padding-left: 10px;
+    animation: fadeIn 1.2s ease forwards;
+}
+
+#recipe-details h2:hover,
+#recipe-details h3:hover {
+    color: #ffffff;
+    transform: scale(1.05);
+    transition: all 0.3s ease;
+}
+
+/* Dark Mode Toggle */
+body.dark-mode {
+    background: var(--dark-bg);
+    color: var(--dark-text);
+}
+
+body.dark-mode .menu {
+    background: rgba(50, 50, 50, 0.9);
+}
+
+body.dark-mode #recipe-details {
+    background: rgba(40, 40, 40, 0.9);
+}
+
+body.dark-mode button {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--highlight-color);
+}
+
+body.dark-mode #recipe-input {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    body {
+        flex-direction: column;
+    }
+
+    .menu-container {
+        flex-direction: column;
+        padding: 10px;
+    }
+
+    #recipe-form {
+        max-width: 100%;
+        padding: 15px;
+    }
+
+    #recipe-details {
+        max-width: 100%;
+        padding: 20px;
+    }
+}
+
+@media (min-width: 769px) {
+    #recipe-details h2 {
+        font-size: 2.2rem;
+    }
+
+    #recipe-details h3 {
+        font-size: 1.8rem;
+    }
+}
+.sidebar-header {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #4CAF50;
+    text-align: center;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.8); /* Black semi-transparent background */
+    border: 1px solid rgba(76, 175, 80, 0.6);
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    margin-bottom: 20px;
+    transition: all 0.4s ease;
+}
+
+
+@keyframes fadeIn {
+    0% { opacity: 0; transform: translateY(30px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    body {
+        flex-direction: column;
+    }
+
+    .menu-container {
+        flex-direction: column;
+        padding: 10px;
+    }
+
+    #recipe-form {
+        max-width: 100%;
+        padding: 15px;
+    }
+
+    #recipe-details {
+        max-width: 100%;
+        padding: 20px;
+    }
+   
+    /* Recipe Details Heading Styles */
+#recipe-details h2 {
+    font-size: 2rem;  /* Large and bold for section headings */
+    color: #00ff00;  /* Neon green color to match the hover effect */
+    text-transform: uppercase;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+    padding-bottom: 5px;
+    margin-bottom: 20px;
+    letter-spacing: 1.5px;
+    animation: fadeIn 1.2s ease forwards;
+}
+
+/* Subheadings (for Ingredients, Steps, etc.) */
+
+}
+
+/* Sidebar Styling */
+.sidebar {
+    width: 250px;
+    height: 100vh;
+    margin-left: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    overflow-y: auto;
+    transition: all 0.5s ease;
+    position: relative;
+}
+/* Expanded Sidebar */
+.sidebar.expanded {
+    width: 530px;
+    background: rgba(255, 255, 255, 0.2);
+    -webkit-backdrop-filter: blur(15px);
+    backdrop-filter: blur(15px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+    transform: scale(1.05);
+}
+
+/* Sidebar Header */
+.sidebar h3 {
+    color: #76FF03;
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    text-align: center;
+    font-weight: bold;
+    text-transform: uppercase;
+    text-shadow: 0 3px 10px rgba(76, 255, 0, 0.8);
+    animation: fadeIn 1s ease;
+}
+
+/* Sidebar List Styling */
+.sidebar ul {
+    list-style: none;
+    padding-left: 0;
+    margin: 30px 0;
+}
+
+.sidebar ul li {
+    font-size: 1.2rem;
+    color: #ddd;
+    padding: 18px 25px;
+    border-radius: 12px;
+    margin-bottom: 15px;
+    background: linear-gradient(135deg, rgba(76, 66, 66, 0.8), rgba(34, 34, 34, 0.8));
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    transition: all 0.4s ease;
+    cursor: pointer;
+    overflow: hidden;
+    position: relative;
+}
+
+.sidebar ul li::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 255, 0, 0.1);
+    transition: left 0.4s ease;
+}
+
+.sidebar ul li:hover::before {
+    left: 0;
+}
+
+.sidebar ul li:hover {
+    background: linear-gradient(135deg, #6bcf6c, #5efd02);
+    color: #000;
+    transform: translateX(10px);
+    box-shadow: 0 10px 20px rgba(0, 255, 0, 0.7);
+}
+
+.sidebar ul li i {
+    margin-right: 20px;
+    color: #76FF03;
+    font-size: 1.8rem;
+    transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.sidebar ul li:hover i {
+    color: #000;
+    transform: rotate(360deg);
+}
+
+/* Sidebar Active Item */
+.sidebar ul li.active {
+    background: linear-gradient(135deg, #4CAF50, #2E7D32);
+    color: #fff;
+    font-weight: bold;
+    box-shadow: 0 8px 16px rgba(0, 255, 0, 0.6);
+}
+
+.sidebar ul li.active i {
+    color: #fff;
+    transform: rotate(0deg);
+}
+
+/* Scrollable Content */
+.sidebar-content {
+    max-height: calc(100vh - 60px);
+    overflow-y: auto;
+}
+
+/* Global link styling */
+a {
+    text-decoration: none;
+    color: inherit;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: #76FF03;
+}
+
+/* Animation for Sidebar Header */
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Mobile View Styles */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 100%;
+        height: auto;
+        padding: 20px;
+        margin: 10px 0;
+    }
+
+    .sidebar.expanded {
+        width: 100%;
+    }
+
+    .sidebar ul li {
+        padding: 12px;
+        font-size: 1rem;
+    }
+
+    .sidebar h3 {
+        font-size: 2rem;
+    }
+   
+    
+}
+
+   
+    /* Adjust layout for video container and additional recipe content */
+    .video-container {
+        position: relative;
+        padding-bottom: 56.25%;
+        height: 0;
+        overflow: hidden;
+        width: 100%;
+    }
+
+    .video-container iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+
+
+
+
+/* Recipe Item Styling */
+.recipe-description, .recipe-ingredients, .recipe-steps, .recipe-more-info {
+    margin-bottom: 15px;
+    font-size: 1rem;
+    color: white;
+    display: block;
+}
+
+.recipe-title {
+    font-size: 1.5rem;
+    font-weight: bold;;
+    color: white;
+    text-decoration: none;
+    display: block; /* Makes the recipe name appear as a block element */
+    margin-bottom: 10px;
+}
+.recipe-list {
+    display: none;
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 10px;
+    
+    border-radius: 5px;
+}
+
+/* Parent container for search and suggestions */
+.search-container {
+    position: relative;
+    width: 150%;
+    max-width: 700px;
+    background: linear-gradient(255, 255, 255, 0.1);
+    padding: 10px;
+    border-radius: 20px; /* Increased for a more rounded look */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Slightly deeper shadow for soft effect */
+    border: 1px solid linear-gradient(255, 255, 255, 0.2); /* Optional: Add a soft border */
+}
+
+/* Individual suggestion items */
+.suggestion-item {
+    padding: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    transition: background 0.4s ease, transform 0.2s ease, box-shadow 0.3s ease;
+    background: sem(16, 22, 32, 0.6);
+    color: var(--text-color);
+    cursor: pointer;
+}
+
+.suggestion-item:hover {
+    background: linear-gradient(135deg, rgba(0, 123, 255, 0.8), rgba(32, 32, 32, 0.8));
+    box-shadow: 0 0 15px rgba(0, 123, 255, 0.8);
+    transform: scale(1.05);
+    color: var(--highlight-color);
+}
+.dropdown {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+  }
+  
+  .dropbtn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 12px 20px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background-color 0.3s, box-shadow 0.3s;
+  }
+  
+  .dropbtn:hover {
+    background-color: #45a049;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    background-color: #fff;
+    min-width: 200px;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.15);
+    z-index: 1;
+    border-radius: 8px;
+    overflow: hidden;
+    animation: fadeIn 0.3s ease;
+  }
+  
+  .dropdown-content a {
+    color: #333;
+    padding: 12px 20px;
+    text-decoration: none;
+    display: block;
+    font-size: 15px;
+    transition: background-color 0.3s, color 0.3s;
+  }
+  
+  .dropdown-content a:hover {
+    background-color: #f1f1f1;
+    color: #4CAF50;
+  }
+  
+  .dropdown:hover .dropdown-content {
+    display: block;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  

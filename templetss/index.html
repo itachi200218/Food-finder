@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Finder</title>
+
+    <!-- Favicon -->
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+    <!-- External CSS -->
+    <link rel="stylesheet" href="/frontend/styles.css">
+
+    <style>
+        /* Top-right corner buttons */
+        .top-buttons {
+            position: fixed;
+            top: 15px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .top-buttons a {
+            background-color: #007BFF;
+            color: white;
+            padding: 8px 14px;
+            font-size: 14px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .top-buttons a:hover {
+            background-color: #0056b3;
+        }
+
+        /* Typing dots for AI loader */
+        .typing {
+          display: inline-block;
+          width: 10px;
+          height: 10px;
+          border-radius: 50%;
+          background: #007bff;
+          margin: 0 2px;
+          animation: blink 1.2s infinite alternate;
+        }
+        .typing:nth-child(2) { animation-delay: 0.2s; }
+        .typing:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes blink {
+          from { opacity: 0.2; transform: translateY(0); }
+          to { opacity: 1; transform: translateY(-3px); }
+        }
+
+        /* 🤖 AI Searching Indicator */
+        #ai-status {
+            display: none;
+            color: #007BFF;
+            font-style: italic;
+            margin-top: 12px;
+            font-size: 15px;
+            animation: pulse 1.2s infinite;
+            text-align: center;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.4; }
+            50% { opacity: 1; }
+            100% { opacity: 0.4; }
+        }
+
+        /* Loader styles */
+        #loadingSpinner {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .spinner {
+            border: 6px solid #f3f3f3;
+            border-top: 6px solid #007BFF;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Top-right corner small buttons -->
+<div class="top-buttons">
+    <a href="{{ url_for('index') }}">Home</a>
+    <a href="{{ url_for('chatbot') }}">ChatBot</a>
+</div>
+
+<!-- Left Sidebar -->
+<div class="sidebar">
+    <h2 class="sidebar-header" onclick="toggleCategories()">Categories</h2>
+    <div id="categories-container">
+        <button onclick="toggleCategory('veg-recipes', 'veg')">Veg</button>
+        <ul id="veg-recipes" class="recipe-list"></ul>
+
+        <button onclick="toggleCategory('non-veg-recipes', 'non-veg')">Non-Veg</button>
+        <ul id="non-veg-recipes" class="recipe-list"></ul>
+
+        <button onclick="toggleCategory('seafood-recipes', 'sea food')">Sea Food</button>
+        <ul id="seafood-recipes" class="recipe-list"></ul>
+
+        <button onclick="toggleCategory('street-food-recipes', 'street food')">Street Food</button>
+        <ul id="street-food-recipes" class="recipe-list"></ul>
+
+        <button onclick="toggleCategory('tiffin-recipes', 'tiffin')">Tiffins</button>
+        <ul id="tiffin-recipes" class="recipe-list"></ul>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="menu-container">
+    <div class="menu">
+        <h1>Food Finder</h1>
+
+        <!-- Recipe Search -->
+        <section class="search-section">
+            <div class="search-container">
+                <form id="recipe-form" class="search-form">
+                    <label for="recipe-input" class="visually-hidden">Search for a recipe or keyword</label>
+                    <input type="text" id="recipe-input" placeholder="Enter a recipe name or keyword" required>
+                    <button type="submit">Search</button>
+                </form>
+                <div id="suggestionsContainer"></div>
+                <!-- 🤖 AI Searching Indicator -->
+                <div id="ai-status">
+                    🤖 Searching with AI...
+                    <span class="typing"></span><span class="typing"></span><span class="typing"></span>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- Recipe Details -->
+        <div id="recipe-details" class="recipe-details">
+            <div id="recipe-steps">
+                <ul id="steps-list"></ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ✅ Loader -->
+<div id="loadingSpinner">
+    <div class="spinner"></div>
+    <p>Loading...</p>
+</div>
+
+<!-- JS Scripts -->
+<!--<script>-->
+<!--    document.getElementById("recipe-form").addEventListener("submit", async (e) => {-->
+<!--        e.preventDefault();-->
+<!--        const query = document.getElementById("recipe-input").value.trim();-->
+<!--        const aiStatus = document.getElementById("ai-status");-->
+<!--        const stepsList = document.getElementById("steps-list");-->
+<!--        stepsList.innerHTML = "";-->
+
+<!--        aiStatus.style.display = "block"; // Show AI searching message-->
+
+<!--        try {-->
+<!--            const response = await fetch(`http://127.0.0.1:5000/search_recipe?query=${encodeURIComponent(query)}`);-->
+<!--            const data = await response.json();-->
+<!--            aiStatus.style.display = "none"; // Hide AI searching message after response-->
+
+<!--            if (data && data.steps) {-->
+<!--                data.steps.forEach(step => {-->
+<!--                    const li = document.createElement("li");-->
+<!--                    li.textContent = step;-->
+<!--                    stepsList.appendChild(li);-->
+<!--                });-->
+<!--            } else {-->
+<!--                stepsList.innerHTML = "<li>No results found.</li>";-->
+<!--            }-->
+<!--        } catch (error) {-->
+<!--            console.error("Error fetching data:", error);-->
+<!--            aiStatus.style.display = "none";-->
+<!--            stepsList.innerHTML = "<li>Error loading data.</li>";-->
+<!--        }-->
+<!--    });-->
+<!--</script>-->
+
+<script src="/frontend/js/api.js"></script>
+<script src="/frontend/js/app.js"></script>
+
+</body>
+</html>

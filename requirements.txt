@@ -1,0 +1,10 @@
+Flask>=2.0.0
+waitress>=2.1.0
+serverless-wsgi>=1.7.0
+fuzzywuzzy==0.18.0
+rapidfuzz>=2.0.0
+Flask-SQLAlchemy==3.1.1
+mysql-connector-python==8.0.31
+SQLAlchemy==2.0.37
+gunicorn==23.0.0
+python-dotenv==1.0.1
