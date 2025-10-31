@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Liked Recipes ❤️</title>
+    <style>
+        body { font-family: Arial; background: #f8f9fa; padding: 30px; }
+        h1 { color: #2d2d2d; }
+        .recipe { background: #fff; margin: 10px 0; padding: 15px; border-radius: 8px; box-shadow: 0 0 5px rgba(0,0,0,0.1); }
+
+        .btn-container {
+            margin-top: 25px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 16px;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .btn:hover {
+            background: #0056b3;
+        }
+
+        .logout-btn {
+            background: #dc3545;
+        }
+
+        .logout-btn:hover {
+            background: #a71d2a;
+        }
+    </style>
+</head>
+<body>
+<h1>Your Liked Recipes ❤️</h1>
+<div id="liked-container"></div>
+
+<div class="btn-container">
+        <a href="{{ url_for('index') }}">🏠 Home</a>
+
+
+    <button class="btn logout-btn" onclick="logout()">🚪 Logout</button>
+</div>
+
+<script>
+    async function loadLikedRecipes() {
+      try {
+        const userRes = await fetch('/current-user');
+        const userData = await userRes.json();
+
+        if (!userData.username) {
+          document.getElementById('liked-container').innerHTML = `
+            <p>Please <a href="login.html">log in</a> to see your liked recipes.</p>
+          `;
+          return;
+        }
+
+        const likeRes = await fetch('/likes');
+        const likedRecipes = await likeRes.json();
+
+        if (likedRecipes.error) {
+          document.getElementById('liked-container').innerHTML = `<p>${likedRecipes.error}</p>`;
+          return;
+        }
+
+        if (!Array.isArray(likedRecipes) || likedRecipes.length === 0) {
+          document.getElementById('liked-container').innerHTML = "<p>No liked recipes yet!</p>";
+          return;
+        }
+
+        document.getElementById('liked-container').innerHTML = likedRecipes
+          .map(recipe => `<div class="recipe">${recipe}</div>`)
+          .join('');
+
+      } catch (err) {
+        console.error("Error:", err);
+        document.getElementById('liked-container').innerHTML = "<p>Error loading liked recipes.</p>";
+      }
+    }
+
+    async function logout() {
+      try {
+        const res = await fetch('/logout', { method: 'POST' });
+        const data = await res.json();
+        if (res.ok) {
+          alert(data.message || 'Logged out successfully!');
+          localStorage.removeItem("user_id");
+          localStorage.removeItem("username");
+          window.location.href = 'login.html';
+        } else {
+          alert(data.error || 'Logout failed!');
+        }
+      } catch (err) {
+        console.error('Logout error:', err);
+        alert('Error logging out.');
+      }
+    }
+
+    loadLikedRecipes();
+</script>
+</body>
+</html>

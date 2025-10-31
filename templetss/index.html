@@ -102,10 +102,16 @@
 <body>
 
 <!-- Top-right corner small buttons -->
-<div class="top-buttons">
+<div class="top-buttons" style="position: fixed; top: 15px; right: 20px; display: flex; gap: 10px; z-index: 1000;">
     <a href="{{ url_for('index') }}">Home</a>
     <a href="{{ url_for('chatbot') }}">ChatBot</a>
+    <a href="{{ url_for('auth_page') }}">Login</a>
+    <button onclick="window.location.href='/liked'"
+            style="background: #4CAF50; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer;">
+        ❤️ Liked Recipes
+    </button>
 </div>
+
 
 <!-- Left Sidebar -->
 <div class="sidebar">
@@ -167,37 +173,29 @@
 </div>
 
 <!-- JS Scripts -->
-<!--<script>-->
-<!--    document.getElementById("recipe-form").addEventListener("submit", async (e) => {-->
-<!--        e.preventDefault();-->
-<!--        const query = document.getElementById("recipe-input").value.trim();-->
-<!--        const aiStatus = document.getElementById("ai-status");-->
-<!--        const stepsList = document.getElementById("steps-list");-->
-<!--        stepsList.innerHTML = "";-->
+<script>
+    async function likeRecipe(recipeName) {
+        try {
+            const response = await fetch('/like', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ recipe_name: recipeName })
+            });
 
-<!--        aiStatus.style.display = "block"; // Show AI searching message-->
-
-<!--        try {-->
-<!--            const response = await fetch(`http://127.0.0.1:5000/search_recipe?query=${encodeURIComponent(query)}`);-->
-<!--            const data = await response.json();-->
-<!--            aiStatus.style.display = "none"; // Hide AI searching message after response-->
-
-<!--            if (data && data.steps) {-->
-<!--                data.steps.forEach(step => {-->
-<!--                    const li = document.createElement("li");-->
-<!--                    li.textContent = step;-->
-<!--                    stepsList.appendChild(li);-->
-<!--                });-->
-<!--            } else {-->
-<!--                stepsList.innerHTML = "<li>No results found.</li>";-->
-<!--            }-->
-<!--        } catch (error) {-->
-<!--            console.error("Error fetching data:", error);-->
-<!--            aiStatus.style.display = "none";-->
-<!--            stepsList.innerHTML = "<li>Error loading data.</li>";-->
-<!--        }-->
-<!--    });-->
-<!--</script>-->
+            const result = await response.json();
+            if (result.success) {
+                alert(`✅ ${recipeName} added to your liked recipes!`);
+            } else {
+                alert(`⚠️ ${result.message || 'Error saving recipe'}`);
+            }
+        } catch (error) {
+            console.error("Error liking recipe:", error);
+            alert("❌ Failed to add recipe to liked list.");
+        }
+    }
+</script>
 
 <script src="/frontend/js/api.js"></script>
 <script src="/frontend/js/app.js"></script>

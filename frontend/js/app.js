@@ -169,8 +169,15 @@ function displayRecipeDetails(data) {
             </iframe>
         </div>` : '';
 
+    // ✅ Add Like / Dislike buttons
     recipeDetailsContainer.innerHTML = `
-        <h1>${data.name || "Recipe Details"}</h1>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h1>${data.name || "Recipe Details"}</h1>
+            <div class="like-dislike-container" style="display: flex; gap: 10px;">
+                <button id="likeBtn" style="background: #4CAF50; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer;">👍 Like</button>
+                <button id="dislikeBtn" style="background: #f44336; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer;">👎 Dislike</button>
+            </div>
+        </div>
         <h2>Description:</h2>
         <p>${data.description || "No description available."}</p>
         <h2>Ingredients:</h2>
@@ -179,6 +186,25 @@ function displayRecipeDetails(data) {
         <ol>${steps.map(s => `<li>${s}</li>`).join('') || "<li>No steps provided.</li>"}</ol>
         ${videoEmbed}
     `;
+
+    // ✅ Handle Like / Dislike button clicks
+    const likeBtn = document.getElementById("likeBtn");
+    const dislikeBtn = document.getElementById("dislikeBtn");
+
+    likeBtn.addEventListener("click", () => {
+        likeBtn.style.background = "#2e7d32"; // darker green
+        dislikeBtn.style.background = "#f44336"; // reset red
+        alert(`You liked "${data.name}" 👍`);
+
+        // ✅ Send to backend to store in DB
+        likeRecipe(data.name);
+    });
+
+    dislikeBtn.addEventListener("click", () => {
+        dislikeBtn.style.background = "#b71c1c"; // darker red
+        likeBtn.style.background = "#4CAF50"; // reset green
+        alert(`You disliked "${data.name}" 👎`);
+    });
 }
 
 function extractYouTubeId(url) {

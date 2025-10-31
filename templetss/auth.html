@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>User Authentication</title>
+    <style>
+        body {
+          font-family: "Poppins", sans-serif;
+          background: #f5f7fa;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100vh;
+        }
+
+        .container {
+          background: white;
+          width: 400px;
+          padding: 30px;
+          border-radius: 16px;
+          box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+          text-align: center;
+          color: #333;
+          margin-bottom: 20px;
+        }
+
+        label {
+          font-weight: 600;
+          margin-top: 10px;
+          display: block;
+          color: #444;
+        }
+
+        input {
+          width: 100%;
+          padding: 10px;
+          margin-top: 6px;
+          border: 1px solid #ccc;
+          border-radius: 8px;
+          font-size: 14px;
+        }
+
+        button {
+          width: 100%;
+          padding: 10px;
+          margin-top: 18px;
+          background-color: #007bff;
+          color: white;
+          border: none;
+          border-radius: 8px;
+          font-size: 15px;
+          cursor: pointer;
+          transition: background 0.3s;
+        }
+
+        button:hover {
+          background-color: #0056b3;
+        }
+
+        .message {
+          margin-top: 10px;
+          text-align: center;
+          font-size: 14px;
+        }
+
+        .success { color: green; }
+        .error { color: red; }
+
+        .switch {
+          text-align: center;
+          margin-top: 15px;
+        }
+
+        .switch a {
+          color: #007bff;
+          text-decoration: none;
+          font-weight: 600;
+          cursor: pointer;
+        }
+
+        /* Top-right Home Button */
+        .top-buttons {
+          position: fixed;
+          top: 15px;
+          right: 20px;
+          z-index: 1000;
+        }
+
+        .top-buttons a {
+          background-color: #007BFF;
+          color: white;
+          padding: 8px 14px;
+          font-size: 14px;
+          border: none;
+          border-radius: 6px;
+          text-decoration: none;
+          transition: background-color 0.3s ease;
+        }
+
+        .top-buttons a:hover {
+          background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+<!-- 🏠 Top-right Home Button -->
+<div class="top-buttons">
+    <a href="{{ url_for('index') }}">🏠 Home</a>
+</div>
+
+<div class="container">
+    <!-- Register -->
+    <div id="registerForm">
+        <h2>Register</h2>
+        <label>Username:</label>
+        <input type="text" id="reg_username" required>
+
+        <label>Email:</label>
+        <input type="email" id="reg_email" required>
+
+        <label>Password:</label>
+        <input type="password" id="reg_password" required>
+
+        <button onclick="registerUser()">Register</button>
+        <div class="message" id="registerMessage"></div>
+        <div class="switch">
+            <a onclick="showLogin()">Already have an account? Login</a>
+        </div>
+    </div>
+
+    <!-- Login -->
+    <div id="loginForm" style="display:none;">
+        <h2>Login</h2>
+        <label>Email:</label>
+        <input type="email" id="login_email" required>
+
+        <label>Password:</label>
+        <input type="password" id="login_password" required>
+
+        <button onclick="loginUser()">Login</button>
+        <div class="message" id="loginMessage"></div>
+        <div class="switch">
+            <a onclick="showRegister()">Create an account</a> |
+            <a onclick="showForgot()">Forgot Password?</a>
+        </div>
+    </div>
+
+    <!-- Forgot Password -->
+    <div id="forgotForm" style="display:none;">
+        <h2>Forgot Password</h2>
+        <label>Email:</label>
+        <input type="email" id="fp_email" required>
+
+        <label>Current Password:</label>
+        <input type="password" id="fp_current" required>
+
+        <label>New Password:</label>
+        <input type="password" id="fp_new" required>
+
+        <label>Confirm Password:</label>
+        <input type="password" id="fp_confirm" required>
+
+        <button onclick="forgotPassword()">Update Password</button>
+        <div class="message" id="forgotMessage"></div>
+        <div class="switch">
+            <a onclick="showLogin()">Back to Login</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    const baseURL = "http://127.0.0.1:5000";
+
+    function showRegister() {
+      document.getElementById("registerForm").style.display = "block";
+      document.getElementById("loginForm").style.display = "none";
+      document.getElementById("forgotForm").style.display = "none";
+    }
+
+    function showLogin() {
+      document.getElementById("registerForm").style.display = "none";
+      document.getElementById("loginForm").style.display = "block";
+      document.getElementById("forgotForm").style.display = "none";
+    }
+
+    function showForgot() {
+      document.getElementById("registerForm").style.display = "none";
+      document.getElementById("loginForm").style.display = "none";
+      document.getElementById("forgotForm").style.display = "block";
+    }
+
+    async function registerUser() {
+      const username = document.getElementById("reg_username").value.trim();
+      const email = document.getElementById("reg_email").value.trim();
+      const password = document.getElementById("reg_password").value.trim();
+      const message = document.getElementById("registerMessage");
+
+      message.textContent = "";
+      message.className = "message";
+
+      try {
+        const res = await fetch(`${baseURL}/register`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, email, password })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          message.textContent = data.message;
+          message.classList.add("success");
+        } else {
+          message.textContent = data.error;
+          message.classList.add("error");
+        }
+      } catch {
+        message.textContent = "Server error!";
+        message.classList.add("error");
+      }
+    }
+
+    async function loginUser() {
+      const email = document.getElementById("login_email").value.trim();
+      const password = document.getElementById("login_password").value.trim();
+      const message = document.getElementById("loginMessage");
+
+      message.textContent = "";
+      message.className = "message";
+
+      try {
+        const res = await fetch(`${baseURL}/login`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+
+        if (res.ok) {
+          message.textContent = data.message;
+          message.classList.add("success");
+
+          // ✅ Save user info in localStorage
+          localStorage.setItem("user_id", data.user_id);
+          localStorage.setItem("username", data.username);
+
+          // ✅ Redirect to liked page or homepage
+          window.location.href = "{{ url_for('liked_page') }}";
+        } else {
+          message.textContent = data.error;
+          message.classList.add("error");
+        }
+      } catch {
+        message.textContent = "Server error!";
+        message.classList.add("error");
+      }
+    }
+
+    async function forgotPassword() {
+      const email = document.getElementById("fp_email").value.trim();
+      const current_password = document.getElementById("fp_current").value.trim();
+      const new_password = document.getElementById("fp_new").value.trim();
+      const confirm_password = document.getElementById("fp_confirm").value.trim();
+      const message = document.getElementById("forgotMessage");
+
+      message.textContent = "";
+      message.className = "message";
+
+      try {
+        const res = await fetch(`${baseURL}/forgot-password`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, current_password, new_password, confirm_password })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          message.textContent = data.message;
+          message.classList.add("success");
+        } else {
+          message.textContent = data.error;
+          message.classList.add("error");
+        }
+      } catch {
+        message.textContent = "Server error!";
+        message.classList.add("error");
+      }
+    }
+</script>
+</body>
+</html>

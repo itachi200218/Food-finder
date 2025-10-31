@@ -21,10 +21,10 @@ model = genai.GenerativeModel("gemini-2.0-flash")
 
 def setup_routes(app):
 
-    # 🏠 Home route
-    @app.route("/", methods=["GET"])
-    def index():
-        return render_template("index.html")
+    # # 🏠 Home route
+    # @app.route("/", methods=["GET"])
+    # def index():
+    #     return render_template("index.html")
 
     # 🤖 Chatbot API (Gemini 2.0 Flash)
     @app.route("/chatbot-api", methods=["POST"])
